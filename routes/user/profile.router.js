@@ -25,3 +25,5 @@ Router.post("/change-profile", verifyToken, function(req, res, next) {
       return res.status(500).send(err);
     }
   });
+
+module.exports= Router;

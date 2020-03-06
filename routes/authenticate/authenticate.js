@@ -2,6 +2,8 @@ var Router = require("express").Router();
 var jwt = require("jsonwebtoken");
 var authenticateController = require("../../controller/authenticate.controller");
 var authenticate = require("../../config/authenticate");
+var verifyToken = require("../../middleware/verifyToken");
+var userController = require("../../controller/user.controller");
 
 Router.post("/login", function(req, res, next) {
   authenticate(req.body, res, next)
