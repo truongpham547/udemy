@@ -54,4 +54,17 @@ Router.post("/register", function(req, res, next) {
   }
 });
 
+Router.post("/change-password", verifyToken, function(req, res, next) {
+  try {
+    let data = req.body;
+    userController
+      .changePassword(req.user.id, data.oldpassword, data.newpassword)
+      .then(result => {
+        return res.status(200).send(result);
+      });
+  } catch (error) {
+    return res.status(500).send(err);
+  }
+});
+
 module.exports = Router;
