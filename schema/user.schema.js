@@ -42,6 +42,14 @@ const userSchema=new Schema({
         type:Number,
         default:0
     },
+
+    activeToken:{
+        type:String
+    },
+
+    resetPasswordRoken:{
+        type:String
+    },
     
     description:String,
 

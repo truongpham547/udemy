@@ -17,7 +17,6 @@ function IsExistUser(email){
 
 function create(name,email,password,phone,address,description,role,image="default",gender){
     return new Promise((resolve,reject)=>{
-        console.log("adad",password,email);
         try{
             var user = new userSchema();
             user.name=name;
@@ -49,7 +48,81 @@ function create(name,email,password,phone,address,description,role,image="defaul
     })
 }
 
+function updateTokenActiveByEmail(email,token){
+    return new Promise((resolve,reject)=>{
+        userSchema.findOneAndUpdate({email:email},{activeToken:token}).then(user=>{
+            return resolve(user);
+        }).catch(err=>{
+            return reject(err);
+        })
+    })
+}
+
+
+function updateTokenResetPasswordByEmail(email,token){
+    return new Promise((resolve,reject)=>{
+        userSchema.findOneAndUpdate({email:email},{resetPasswordRoken:token}).then(user=>{
+            return resolve(user);
+        }).catch(err=>{
+            return reject(err);
+        })
+    })
+}
+
+
+function activeAccountByEmail(email){
+    return new Promise((resolve,reject)=>{
+        userSchema.findOneAndUpdate({email:email},{active:1,activeToken:""},{new:true}).then(user=>{
+            return resolve(user);
+        }).catch(err=>{
+            return reject(err);
+        })
+    })
+}
+
+function get(id){
+    return new Promise((resolve,reject)=>{
+        userSchema.findOne({_id:id}).then(user=>{
+            return resolve(user);
+        }).catch(err=>{
+            return reject(err);
+        })
+    })
+}
+
+function getByEmail(email){
+    return new Promise((resolve,reject)=>{
+        userSchema.findOne({email:email}).then(user=>{
+            return resolve(user);
+        }).catch(err=>{
+            return reject(err);
+        })
+    })
+}
+
+function updatePasswordByEmail(email,newPassword){
+    return new Promise((resolve,reject)=>{
+        bcrypt.hash(newPassword,bcrypt.genSaltSync(10))
+        .then(hashed=>{
+            userSchema.findOneAndUpdate({email:email},{password:hashed},{new:true}).then(user=>{
+                return resolve(user);
+            }).catch(err=>{
+                return reject(err);
+            })
+        }).catch(err=>{
+            reject(err);
+        })
+    })
+}
+
+
 module.exports={
     IsExistUser:IsExistUser,
-    create:create
+    create:create,
+    updateTokenActiveByEmail:updateTokenActiveByEmail,
+    activeAccountByEmail:activeAccountByEmail,
+    get:get,
+    getByEmail:getByEmail,
+    updatePasswordByEmail:updatePasswordByEmail,
+    updateTokenResetPasswordByEmail:updateTokenResetPasswordByEmail
 }

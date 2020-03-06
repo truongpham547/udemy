@@ -1,5 +1,6 @@
 var userModel = require("../model/user.model");
 var path = require("path");
+var mailer = require('../helper/mailer');
 
 function getSpecific(length) {
   var result = "";
@@ -65,7 +66,17 @@ function register(userData, image) {
                 userData.gender
               )
               .then(newUser => {
-                resolve({ message: "Đăng kí thành công", user: newUser });
+                //send mail to with token to active
+                let mailToken= getSpecific(6);
+                mailer.sendMail(userData.email,"Kích hoạt tài khoản","Vui lòng quay về trang web hoặc ứng dụng điện thoại và nhấn vào mục kích hoạt sau đó nhập email và token như sau: "+mailToken).then(result=>{
+                  userModel.updateTokenActiveByEmail(userData.email,mailToken).then(userUpdated=>{
+                    resolve({ message: "Đăng kí thành công", user: newUser });
+                  }).catch(err=>{
+                    reject(err);
+                  })
+                }).catch(err=>{
+                  reject(err);
+                })
               })
               .catch(err => {
                 return reject(err);
@@ -82,6 +93,80 @@ function register(userData, image) {
   });
 }
 
+function forgotPassword(userData){
+  return new Promise((resolve,reject)=>{
+    IsExistUser(userData.email).then(result=>{
+      if(result){
+        let mailToken= getSpecific(6);
+        mailer.sendMail(userData.email,"Quên mật khẩu","Vui lòng quay lại giao diện Web hoặc App để nhập mật khẩu mới kèm với Token sau: "+mailToken).then(result=>{
+          userModel.updateTokenResetPasswordByEmail(userData.email,mailToken).then(user=>{
+            resolve({"message":"đã gửi mail thành công"});
+          }).catch(err=>{
+            reject(err);
+          })
+        }).catch(err=>{
+          reject(err);
+        })
+      }else{
+        return resolve({"message":"email không tồn tại"});
+      }
+    }).catch(err=>{
+      reject(err)
+    })
+  })
+}
+
+function activeAccount(userData){
+  return new Promise((resolve,reject)=>{
+    IsExistUser(userData.email).then(result=>{
+      if(result){
+        userModel.getByEmail(userData.email).then(user=>{
+          if(user.activeToken==userData.activeToken){
+            userModel.activeAccountByEmail(userData.email).then(userActive=>{
+              return resolve(userActive);
+            }).catch(err=>{
+              return reject(err);
+            })
+          }else{
+            return resolve({message:"token không hợp lệ"});
+          }
+        }).catch(err=>{
+          reject(err);
+        })
+      }else{
+        resolve({message:"email không tồn tại"})
+      }
+    })
+  })
+}
+
+function resetPassword(userData){
+  return new Promise((resolve,reject)=>{
+    IsExistUser(userData.email).then(result=>{
+      if(result){
+        userModel.getByEmail(userData.email).then(user=>{
+          if(user.resetPasswordRoken==userData.token){
+            userModel.updatePasswordByEmail(userData.email,userData.password).then(user=>{
+              resolve(user);
+            }).catch(err=>{
+              reject(err);
+            })
+          }else{
+            return resolve({message:"token không hợp lệ"});
+          }
+        }).catch(err=>{
+          reject(err);
+        })
+      }else{
+        resolve({message:"email không tồn tại"})
+      }
+    })
+  })
+}
+
 module.exports = {
-  register: register
+  register: register,
+  activeAccount:activeAccount,
+  forgotPassword:forgotPassword,
+  resetPassword:resetPassword
 };

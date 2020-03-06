@@ -69,4 +69,34 @@ Router.post("/change-password", verifyToken, function(req, res, next) {
   }
 });
 
+Router.post("/active-account",(req,res,next)=>{
+  authenticateController.activeAccount(req.body).then(user=>{
+    return res.status(200).send(user);
+  }).catch(err=>{
+    return res.status(500).send(err);
+  })
+});
+
+Router.post("/forgot-password",(req,res,next)=>{
+  let data = req.body;
+  authenticateController.forgotPassword(data).then(result=>{
+    res.status(200).send(result);
+  }).catch(err=>{
+    res.status(500).send(err);
+  })
+
+});
+
+
+Router.post("/reset-password",(req,res,next)=>{
+  let data = req.body;
+  authenticateController.resetPassword(data).then(result=>{
+    res.status(200).send(result);
+  }).catch(err=>{
+    console.log(err);
+    res.status(500).send(err);
+  })
+
+});
+
 module.exports = Router;
