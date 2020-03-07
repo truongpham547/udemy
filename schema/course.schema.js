@@ -35,6 +35,17 @@ const courseSchema = new Schema({
     default: 0
   },
 
+  //trung bình cộng của lược vote (bằng sao)
+  vote:{
+    type:Number,
+    default:0
+  },
+
+  //thời gian dự kiến hoàn thành khóa học
+  duration:{
+    type:String
+  },
+
   created_at: {
     type: Date,
     default: Date.now()
