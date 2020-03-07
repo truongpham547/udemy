@@ -10,6 +10,7 @@ const courseSchema = new Schema({
     type: Schema.Types.ObjectId,
     required: true
   },
+  //hinh nen
   background: {
     type: String
   },
@@ -22,7 +23,7 @@ const courseSchema = new Schema({
     required: true
   },
   category: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true
   },
   price: {
