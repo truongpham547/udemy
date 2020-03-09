@@ -11,7 +11,7 @@ const courseSchema = new Schema({
     required: true
   },
   //hinh nen
-  background: {
+  image: {
     type: String
   },
   goal: {
@@ -23,8 +23,8 @@ const courseSchema = new Schema({
     required: true
   },
   category: {
-    type: Schema.Types.ObjectId,
-    required: true
+    type: Schema.Types.ObjectId
+    //required: true
   },
   price: {
     type: Number,
@@ -36,17 +36,16 @@ const courseSchema = new Schema({
     default: 0
   },
 
-  vote:{
-    totalVote:{
-      type:Number,
-      default:0
+  vote: {
+    totalVote: {
+      type: Number,
+      default: 0
     },
-    everageVote:{
-      type:Number,
-      default:0
+    everageVote: {
+      type: Number,
+      default: 0
     }
   },
-
 
   created_at: {
     type: Date,

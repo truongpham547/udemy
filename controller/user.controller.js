@@ -23,14 +23,14 @@ function changePassword(id, oldPassword, newPassword) {
                     password: hashed
                   }
                 ).then(user => {
-                  resolve({ message: "Cap nhat thanh cong" });
+                  resolve({ status: "success" });
                 })
               );
             } catch (error) {
               resolve({ status: "error" });
             }
           } else {
-            resolve({ message: "Mat khau hien tai khong khop" });
+            resolve({ message: "no match" });
           }
         });
       });
@@ -58,7 +58,7 @@ function changeAvatar(id, image) {
           );
         }
         image = image.image;
-        imageName = id + image.name;
+        imageName = id + "user" + image.name;
         image.mv(
           path.join(__dirname, "../public/upload/user_image/" + imageName),
           function(errImage) {
@@ -68,7 +68,7 @@ function changeAvatar(id, image) {
           }
         );
         User.findOneAndUpdate({ _id: id }, { image: imageName }).then(user => {
-          resolve({ status: "Cap nhat thanh cong" });
+          resolve({ status: "success" });
         });
       });
     } catch (error) {
@@ -90,7 +90,7 @@ function changeProfile(id, data) {
           gender: data.gender
         }
       ).then(user => {
-        resolve({ message: "Cap nhat thanh cong" });
+        resolve({ status: "success" });
       });
     } catch (error) {
       resolve({ status: "error" });

@@ -1,12 +1,12 @@
-var userSchema = require("../schema/course.schema");
+var courseSchema = require("../schema/course.schema");
 
 function create(
   name,
   idUser,
-  background,
+  image,
   goal,
   description,
-  category,
+  //category,
   price,
   discount
 ) {
@@ -15,10 +15,10 @@ function create(
       var course = new courseSchema();
       course.name = name;
       course.idUser = idUser;
-      course.background = background;
+      course.image = image;
       course.goal = goal;
       course.description = description;
-      course.category = category;
+      //course.category = category;
       course.price = price;
       course.discount = discount;
       return course
