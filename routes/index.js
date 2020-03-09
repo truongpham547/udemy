@@ -8,6 +8,6 @@ Router.get('/say-hello', function(req, res, next) {
 
 Router.use('/',require('./authenticate/authenticate.js'));
 Router.use('/',require('./user/index.router.js'));
-Router.use('/admin',require('./admin/index.router.js'));
+Router.use('/',require('./admin/index.router.js'));
 
 module.exports = Router;
