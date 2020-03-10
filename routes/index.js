@@ -6,7 +6,7 @@ Router.get("/say-hello", function(req, res, next) {
 });
 
 Router.use("/course", require("./course/course.router.js"));
-Router.use('/',require('./admin/index.router.js'));
+Router.use('/category',require('./category/category.router.js'));
 Router.use('/',require('./user/index.router.js'));
 Router.use('/',require('./authenticate/authenticate.js'));
 

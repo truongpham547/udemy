@@ -5,10 +5,10 @@ function addCategory(userData) {
   return new Promise((resolve, reject) => {
     categoryModel.isExist(userData.name).then(result=>{
         if(result){
-            return resolve({"message":"danh mục đã tồn tại"});
+            return resolve({status:false,"message":"Danh mục đã tồn tại"});
         }else{
             categoryModel.addCategory(userData.name).then(newCategory=>{
-                return resolve(newCategory);
+                return resolve({status:true,category:newCategory});
             }).catch(err=>{
                 return reject(err);
             })
@@ -53,10 +53,10 @@ function updateCategory(id,userData){
     return new Promise((resolve,reject)=>{
         categoryModel.isExist(userData.name).then(result=>{
             if(result){
-                return resolve({message:"danh mục đã tồn tại"});
+                return resolve({status:false,message:"danh mục đã tồn tại"});
             }else{
                 categoryModel.updateCategory(id,userData.name).then(newCategory=>{
-                    return resolve(newCategory);
+                    return resolve({status:true,category:newCategory});
                 }).catch(err=>{
                     return reject(err);
                 })
