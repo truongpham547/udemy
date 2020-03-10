@@ -100,7 +100,7 @@ function forgotPassword(userData){
         let mailToken= getSpecific(6);
         mailer.sendMail(userData.email,"Quên mật khẩu","Vui lòng quay lại giao diện Web hoặc App để nhập mật khẩu mới kèm với Token sau: "+mailToken).then(result=>{
           userModel.updateTokenResetPasswordByEmail(userData.email,mailToken).then(user=>{
-            resolve({"message":"đã gửi mail thành công"});
+            resolve({status:true,"message":"đã gửi mail thành công"});
           }).catch(err=>{
             reject(err);
           })
@@ -108,7 +108,7 @@ function forgotPassword(userData){
           reject(err);
         })
       }else{
-        return resolve({"message":"email không tồn tại"});
+        return resolve({status:false,"message":"email không tồn tại"});
       }
     }).catch(err=>{
       reject(err)
@@ -123,18 +123,18 @@ function activeAccount(userData){
         userModel.getByEmail(userData.email).then(user=>{
           if(user.activeToken==userData.activeToken){
             userModel.activeAccountByEmail(userData.email).then(userActive=>{
-              return resolve(userActive);
+              return resolve({status:true,user:userActive});
             }).catch(err=>{
               return reject(err);
             })
           }else{
-            return resolve({message:"token không hợp lệ"});
+            return resolve({status:false,message:"token không hợp lệ"});
           }
         }).catch(err=>{
           reject(err);
         })
       }else{
-        resolve({message:"email không tồn tại"})
+        resolve({status:false,message:"email không tồn tại"})
       }
     })
   })
@@ -147,18 +147,18 @@ function resetPassword(userData){
         userModel.getByEmail(userData.email).then(user=>{
           if(user.resetPasswordRoken==userData.token){
             userModel.updatePasswordByEmail(userData.email,userData.password).then(user=>{
-              resolve(user);
+              resolve({status:true,user:user});
             }).catch(err=>{
               reject(err);
             })
           }else{
-            return resolve({message:"token không hợp lệ"});
+            return resolve({status:false,message:"token không hợp lệ"});
           }
         }).catch(err=>{
           reject(err);
         })
       }else{
-        resolve({message:"email không tồn tại"})
+        resolve({status:false,message:"email không tồn tại"})
       }
     })
   })

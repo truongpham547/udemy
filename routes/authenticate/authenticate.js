@@ -11,7 +11,7 @@ Router.post("/login", function(req, res, next) {
       if (user == null) {
         return res
           .status(401)
-          .send({ message: "invalid username and password" });
+          .send({ message: "Mật khẩu hoặc Email không hợp lệ" });
       } else {
         const token = jwt.sign(
           { id: user._id, role: user.role },
@@ -24,7 +24,7 @@ Router.post("/login", function(req, res, next) {
       }
     })
     .catch(err => {
-      return res.status(500).send({ error: err });
+      return res.status(500).send({message:"Lỗi server" });
     });
 });
 
@@ -36,7 +36,7 @@ Router.post("/register", function(req, res, next) {
       .register(userData, image)
       .then(result => {
         if (result.user == null) {
-          return res.status(200).send(result);
+          return res.status(500).send(result);
         } else {
           const token = jwt.sign(
             { id: result.user._id, role: result.user.role },
@@ -49,7 +49,8 @@ Router.post("/register", function(req, res, next) {
         }
       })
       .catch(err => {
-        return res.status(500).send(err);
+        console.log(err);
+        return res.status(500).send({"message":"Lỗi server"});
       });
   } catch (error) {
     console.log(error);
@@ -70,19 +71,28 @@ Router.post("/change-password", verifyToken, function(req, res, next) {
 });
 
 Router.post("/active-account",(req,res,next)=>{
-  authenticateController.activeAccount(req.body).then(user=>{
-    return res.status(200).send(user);
+  authenticateController.activeAccount(req.body).then(result=>{
+    if(result.status){
+      return res.status(200).send(result.user);
+    }else{
+      return res.status(500).send({message:result.message});
+    }
   }).catch(err=>{
-    return res.status(500).send(err);
+    return res.status(500).send({message:"Lỗi server"});
   })
 });
 
 Router.post("/forgot-password",(req,res,next)=>{
   let data = req.body;
   authenticateController.forgotPassword(data).then(result=>{
-    res.status(200).send(result);
+    if(result.status){
+      res.status(200).send({message:result.message});
+    }else{
+      res.status(500).send({message:result.message});
+    }
+    
   }).catch(err=>{
-    res.status(500).send(err);
+    res.status(500).send({message:"Lỗi server"});
   })
 
 });
@@ -91,10 +101,15 @@ Router.post("/forgot-password",(req,res,next)=>{
 Router.post("/reset-password",(req,res,next)=>{
   let data = req.body;
   authenticateController.resetPassword(data).then(result=>{
-    res.status(200).send(result);
+    if(result.status){
+      return res.status(200).send(result.user);
+    }else{
+      return res.status(500).send({message:result.message});
+    }
+    
   }).catch(err=>{
     console.log(err);
-    res.status(500).send(err);
+    res.status(500).send({message:"Lỗi server"});
   })
 
 });
