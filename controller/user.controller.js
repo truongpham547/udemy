@@ -68,7 +68,8 @@ function changeAvatar(id, image) {
           }
         );
         User.findOneAndUpdate({ _id: id }, { image: imageName }).then(user => {
-          resolve({ status: "success" });
+          user.image = imageName;
+          resolve({ status: "success", user });
         });
       });
     } catch (error) {
@@ -90,7 +91,12 @@ function changeProfile(id, data) {
           gender: data.gender
         }
       ).then(user => {
-        resolve({ status: "success" });
+        user.name = data.name;
+        user.phone = data.phone;
+        user.address = data.address;
+        user.description = data.description;
+        user.gender = data.gender;
+        resolve({ status: "success", user });
       });
     } catch (error) {
       resolve({ status: "error" });
