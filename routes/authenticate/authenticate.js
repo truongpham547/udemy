@@ -24,7 +24,7 @@ Router.post("/login", function(req, res, next) {
       }
     })
     .catch(err => {
-      return res.status(500).send({message:"Lỗi server" });
+      return res.status(500).send({ message: "Lỗi server" });
     });
 });
 
@@ -50,14 +50,14 @@ Router.post("/register", function(req, res, next) {
       })
       .catch(err => {
         console.log(err);
-        return res.status(500).send({"message":"Lỗi server"});
+        return res.status(500).send({ message: "Lỗi server" });
       });
   } catch (error) {
     console.log(error);
   }
 });
 
-Router.post("/change-password", verifyToken, function(req, res, next) {
+Router.put("/change-password", verifyToken, function(req, res, next) {
   try {
     let data = req.body;
     userController
@@ -70,48 +70,52 @@ Router.post("/change-password", verifyToken, function(req, res, next) {
   }
 });
 
-Router.post("/active-account",(req,res,next)=>{
-  authenticateController.activeAccount(req.body).then(result=>{
-    if(result.status){
-      return res.status(200).send(result.user);
-    }else{
-      return res.status(500).send({message:result.message});
-    }
-  }).catch(err=>{
-    return res.status(500).send({message:"Lỗi server"});
-  })
+Router.post("/active-account", (req, res, next) => {
+  authenticateController
+    .activeAccount(req.body)
+    .then(result => {
+      if (result.status) {
+        return res.status(200).send(result.user);
+      } else {
+        return res.status(500).send({ message: result.message });
+      }
+    })
+    .catch(err => {
+      return res.status(500).send({ message: "Lỗi server" });
+    });
 });
 
-Router.post("/forgot-password",(req,res,next)=>{
+Router.post("/forgot-password", (req, res, next) => {
   let data = req.body;
-  authenticateController.forgotPassword(data).then(result=>{
-    if(result.status){
-      res.status(200).send({message:result.message});
-    }else{
-      res.status(500).send({message:result.message});
-    }
-    
-  }).catch(err=>{
-    res.status(500).send({message:"Lỗi server"});
-  })
-
+  authenticateController
+    .forgotPassword(data)
+    .then(result => {
+      if (result.status) {
+        res.status(200).send({ message: result.message });
+      } else {
+        res.status(500).send({ message: result.message });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({ message: "Lỗi server" });
+    });
 });
 
-
-Router.post("/reset-password",(req,res,next)=>{
+Router.post("/reset-password", (req, res, next) => {
   let data = req.body;
-  authenticateController.resetPassword(data).then(result=>{
-    if(result.status){
-      return res.status(200).send(result.user);
-    }else{
-      return res.status(500).send({message:result.message});
-    }
-    
-  }).catch(err=>{
-    console.log(err);
-    res.status(500).send({message:"Lỗi server"});
-  })
-
+  authenticateController
+    .resetPassword(data)
+    .then(result => {
+      if (result.status) {
+        return res.status(200).send(result.user);
+      } else {
+        return res.status(500).send({ message: result.message });
+      }
+    })
+    .catch(err => {
+      console.log(err);
+      res.status(500).send({ message: "Lỗi server" });
+    });
 });
 
 module.exports = Router;
