@@ -8,7 +8,7 @@ Router.post("/create-join", function(req, res, next) {
             if(result.status){
                 return res.status(200).send(result.newJoin);
             }else{
-                return res.status(500).send(result.message);
+                return res.status(500).send({message:result.message});
             }
         }).catch (error=>{
             console.log(error)
