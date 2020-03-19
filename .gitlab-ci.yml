@@ -1,0 +1,7 @@
+heroku:
+ stage: deploy
+ only:
+ - develop
+ script:
+ - git remote add heroku https://heroku:5a2afa00-0fc0-4048-b5f8-efc473250a34@git.heroku.com/udemy-online-courses.git
+ - git push -f heroku develop
