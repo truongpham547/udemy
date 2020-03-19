@@ -18,6 +18,8 @@ Router.post("/create-join", function(req, res, next) {
 });
 
 Router.get("/get-courses-joined-by-user/:id",function(req, res, next) {
+    var cookie = req.cookies.jwt;
+    console.log(cookie);
         let userData = req.body;
         let id = req.params.id;
         joinController.getCoursesJoinedByIdUser(id).then(result => {

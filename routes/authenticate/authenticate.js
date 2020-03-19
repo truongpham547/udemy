@@ -118,4 +118,20 @@ Router.post("/reset-password", (req, res, next) => {
     });
 });
 
+Router.get('/logout',(req,res,next)=>{
+  var cookie = req.cookies.jwt;
+  console.log(cookie);
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true
+  });
+  res.status(200).json({ status: 'success' });
+});
+
+Router.get('/test-token',(req,res,next)=>{
+  var cookie = req.cookies.jwt;
+  console.log(cookie);
+  res.status(200).json({ status: 'success' });
+});
+
 module.exports = Router;
