@@ -130,7 +130,7 @@ Router.get('/logout',(req,res,next)=>{
 
 Router.get('/test-token',(req,res,next)=>{
   var cookie = req.cookies.jwt;
-  console.log(cookie);
+  console.log(JSON.stringify(req.cookies));
   res.status(200).json({ status: 'success' });
 });
 
