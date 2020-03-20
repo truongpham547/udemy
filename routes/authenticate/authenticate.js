@@ -14,9 +14,10 @@ Router.post("/login", function(req, res, next) {
           .send({ message: "Mật khẩu hoặc Email không hợp lệ" });
       } else {
         const token = jwt.sign(
-          { id: user._id, role: user.role },
+          { id: user._id, role: user.role,active:user.active},
           process.env.TOKEN_SECRET
         );
+        res.clearCookie("jwt");
         return res
           .status(200)
           .header("auth-token", token)
@@ -42,6 +43,7 @@ Router.post("/register", function(req, res, next) {
             { id: result.user._id, role: result.user.role },
             process.env.TOKEN_SECRET
           );
+          res.clearCookie("jwt");
           return res
             .status(200)
             .header("auth-token", token)
@@ -119,19 +121,20 @@ Router.post("/reset-password", (req, res, next) => {
 });
 
 Router.get('/logout',(req,res,next)=>{
-  var cookie = req.cookies.jwt;
-  console.log(cookie);
   res.cookie('jwt', 'loggedout', {
-    expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true
   });
   res.status(200).json({ status: 'success' });
 });
 
-Router.get('/test-token',(req,res,next)=>{
-  var cookie = req.cookies.jwt;
-  console.log(cookie);
-  res.status(200).json({ status: 'success' });
+// Router.get('/test-token',(req,res,next)=>{
+//   console.log(JSON.stringify(req.cookies));
+//   res.status(200).json({ status: 'success' });
+// });
+
+Router.get("/test-verifyToken", verifyToken, function(req, res, next) {
+  return res.status(200).send("sadasd");
 });
+
 
 module.exports = Router;

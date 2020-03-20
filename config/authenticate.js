@@ -15,7 +15,6 @@ module.exports = function(req, res, next) {
       }
       // Match password
       bcrypt.compare(password, user.password, (err, isMatch) => {
-        console.log("run heare");
         if (err) {
           console.log(err);
           return reject(err);
