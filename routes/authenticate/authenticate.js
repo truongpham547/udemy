@@ -132,9 +132,4 @@ Router.get('/logout',(req,res,next)=>{
 //   res.status(200).json({ status: 'success' });
 // });
 
-Router.get("/test-verifyToken", verifyToken, function(req, res, next) {
-  return res.status(200).send("sadasd");
-});
-
-
 module.exports = Router;
