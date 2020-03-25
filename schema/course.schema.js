@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const user = require("./user.schema");
+const category = require("./category.schema");
 
 const courseSchema = new Schema({
   name: {
@@ -23,8 +25,8 @@ const courseSchema = new Schema({
     required: true
   },
   category: {
-    type: Schema.Types.ObjectId
-    //required: true
+    type: Schema.Types.ObjectId,
+    required: true
   },
   price: {
     type: Number,
@@ -37,11 +39,15 @@ const courseSchema = new Schema({
   },
 
   vote: {
+    totalPoint: {
+      type: Number,
+      default: 0
+    },
     totalVote: {
       type: Number,
       default: 0
     },
-    everageVote: {
+    EVGVote: {
       type: Number,
       default: 0
     }

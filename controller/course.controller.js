@@ -3,36 +3,34 @@ var courseModel = require("../model/course.model");
 const fs = require("fs");
 var path = require("path");
 
-function createCourse(id, courseData, image) {
+function createCourse(iduser, courseData, image) {
   return new Promise((resolve, reject) => {
     try {
       courseModel
         .create(
           courseData.name,
-          id,
+          iduser,
           (_image = "default"),
           courseData.goal,
           courseData.description,
-          //courseData.category,
+          courseData.category,
           courseData.price,
           courseData.discount
         )
         .then(newCourse => {
-          console.log(newCourse.name);
           if (image) {
+            console.log(image);
             image = image.image;
             imageName = newCourse.id + "course" + image.name;
-            fs.unlink(
-              path.join(
-                __dirname,
-                "../public/upload/course_image/" + imageName.image
-              ),
-              err => {
-                if (err) {
-                  resolve({ status: "error" });
-                }
-              }
-            );
+            try {
+              fs.unlink(
+                path.join(
+                  __dirname,
+                  "../public/upload/course_image/" + imageName.image
+                )
+              );
+            } catch (err) {}
+
             image.mv(
               path.join(
                 __dirname,
@@ -64,6 +62,58 @@ function createCourse(id, courseData, image) {
   });
 }
 
+function getCourses() {
+  return new Promise((resolve, reject) => {
+    courseModel
+      .gets()
+      .then(courses => {
+        return resolve(courses);
+      })
+      .catch(err => {
+        return reject(err);
+      });
+  });
+}
+
+function getbyCategory(idcategory) {
+  return new Promise((resolve, reject) => {
+    courseModel
+      .getbyCategory(idcategory)
+      .then(courses => {
+        return resolve(courses);
+      })
+      .catch(err => {
+        return reject(err);
+      });
+  });
+}
+
+function getfree() {
+  return new Promise((resolve, reject) => {
+    courseModel
+      .getfree()
+      .then(courses => {
+        return resolve(courses);
+      })
+      .catch(err => {
+        return reject(err);
+      });
+  });
+}
+
+function gettop() {
+  return new Promise((resolve, reject) => {
+    courseModel
+      .gettop()
+      .then(courses => {
+        return resolve(courses);
+      })
+      .catch(err => {
+        return reject(err);
+      });
+  });
+}
+
 function deleteCourse(id, idUser) {
   return new Promise((resolve, reject) => {
     try {
@@ -80,6 +130,7 @@ function deleteCourse(id, idUser) {
 function updateCourse(idUser, updateCourse, image) {
   return new Promise((resolve, reject) => {
     try {
+      console.log(idUser);
       course
         .findOneAndUpdate(
           { _id: updateCourse.id, idUser: idUser },
@@ -97,6 +148,15 @@ function updateCourse(idUser, updateCourse, image) {
             if (image) {
               image = image.image;
               imageName = updateCourse.id + "course" + image.name;
+              try {
+                fs.unlink(
+                  path.join(
+                    __dirname,
+                    "../public/upload/course_image/" + imageName.image
+                  )
+                );
+              } catch (err) {}
+
               image.mv(
                 path.join(
                   __dirname,
@@ -132,5 +192,9 @@ function updateCourse(idUser, updateCourse, image) {
 module.exports = {
   createCourse: createCourse,
   deleteCourse: deleteCourse,
-  updateCourse: updateCourse
+  updateCourse: updateCourse,
+  getCourses: getCourses,
+  getbyCategory: getbyCategory,
+  getfree: getfree,
+  gettop: gettop
 };

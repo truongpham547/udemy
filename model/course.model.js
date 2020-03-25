@@ -6,7 +6,7 @@ function create(
   image,
   goal,
   description,
-  //category,
+  category,
   price,
   discount
 ) {
@@ -18,7 +18,7 @@ function create(
       course.image = image;
       course.goal = goal;
       course.description = description;
-      //course.category = category;
+      course.category = category;
       course.price = price;
       course.discount = discount;
       return course
@@ -36,6 +36,63 @@ function create(
   });
 }
 
+function gets() {
+  return new Promise((resolve, reject) => {
+    courseSchema
+      .find()
+      .then(courses => {
+        return resolve(courses);
+      })
+      .catch(err => {
+        return reject(err);
+      });
+  });
+}
+
+function getbyCategory(idcategory) {
+  return new Promise((resolve, reject) => {
+    courseSchema
+      .find({ category: idcategory })
+      .then(courses => {
+        return resolve(courses);
+      })
+      .catch(err => {
+        return reject(err);
+      });
+  });
+}
+
+function getfree() {
+  return new Promise((resolve, reject) => {
+    courseSchema
+      .find({ price: 0 })
+      .then(courses => {
+        return resolve(courses);
+      })
+      .catch(err => {
+        return reject(err);
+      });
+  });
+}
+
+function gettop() {
+  return new Promise((resolve, reject) => {
+    courseSchema
+      .find()
+      .sort({ vote: -1 })
+      .then(courses => {
+        return resolve(courses);
+      })
+      .catch(err => {
+        return reject(err);
+      });
+  });
+}
+
 module.exports = {
-  create: create
+  create: create,
+  gets: gets,
+  getbyCategory: getbyCategory,
+  getfree: getfree,
+  gettop: gettop
 };
