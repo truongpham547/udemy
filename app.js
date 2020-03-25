@@ -33,14 +33,14 @@ app.use(bodyParser.json());
 
 //connect mongodb
 
-const { URL_DB_LOCAL , URL_DB_SERVER } = process.env;
+const { URL_DB_LOCAL, URL_DB_SERVER } = process.env;
 
 mongoose.connect(
   `${URL_DB_SERVER}` || `${URL_DB_LOCAL}`,
   { useNewUrlParser: true, useUnifiedTopology: true },
   err => {
     if (err) {
-      console.log('connect fail');
+      console.log("connect fail");
       console.log(err);
     } else {
       console.log("connected to mongodb");

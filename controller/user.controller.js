@@ -23,14 +23,15 @@ function changePassword(id, oldPassword, newPassword) {
                     password: hashed
                   }
                 ).then(user => {
-                  resolve({ status: "success" });
+                  user.password = hashed;
+                  resolve({ status: "success", user });
                 })
               );
             } catch (error) {
               resolve({ status: "error" });
             }
           } else {
-            resolve({ message: "no match" });
+            resolve({ status: "no match" });
           }
         });
       });
