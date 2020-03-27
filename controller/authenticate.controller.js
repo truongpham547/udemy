@@ -37,20 +37,8 @@ function register(userData, image) {
           } else {
             var imageName = "default";
             console.log(image);
-            if (image) {
-              image = image.image;
-              imageName = getSpecific(30) + image.name;
-              image.mv(
-                path.join(
-                  __dirname,
-                  "../public/upload/user_image/" + imageName
-                ),
-                function(errImage) {
-                  if (errImage) {
-                    reject(errImage);
-                  }
-                }
-              );
+            if(image!=undefined){
+              imageName=image;
             }
 
             userModel

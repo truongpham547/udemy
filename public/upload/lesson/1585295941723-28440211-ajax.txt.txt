@@ -1,0 +1,22 @@
+    function getDataOrderUser(){
+        $.ajax({
+            url: `/order/get-order-by-id-user/${dataUser._id}`,
+            method: 'GET',
+            success: (orders)=>{
+                let html = ``;
+                for(let i = 0; i < orders.length; i++){
+                    let dateString = orders[i].date.toString();
+                    let dateData = 'Ngày '+dateString.slice(8,10)+' Tháng '+dateString.slice(5,7)+' Năm '+dateString.slice(0,4); 
+                    console.log(dateData);
+                    html+=`<tr>
+                                <td>${orders[i].product_id.name}</td>
+                                <td>${dateData}</td>
+                                <td>${orders[i].numItem}</td>
+                                <td>${orders[i].destination}</td>
+                            </tr>`;
+                }
+
+                $('.dataOrdered').html(html);
+            }
+        })
+    }

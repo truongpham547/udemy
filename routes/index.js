@@ -8,6 +8,8 @@ Router.get("/say-hello", function(req, res, next) {
 Router.get('/', (req, res) => {
   res.sendFile(path.join(__dirname + '../public/index.html'));
 })
+
+Router.use("/lesson", require("./lesson/lesson.router.js"));
 Router.use("/course", require("./course/course.router.js"));
 Router.use('/category',require('./category/category.router.js'));
 Router.use('/join',require("./join/join.router"));

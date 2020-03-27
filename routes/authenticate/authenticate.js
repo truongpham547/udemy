@@ -4,6 +4,21 @@ var authenticateController = require("../../controller/authenticate.controller")
 var authenticate = require("../../config/authenticate");
 var verifyToken = require("../../middleware/verifyToken");
 var userController = require("../../controller/user.controller");
+var multer  = require('multer');
+
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'public/upload/user_image')
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    cb(null, uniqueSuffix+'-'+file.originalname )
+  }
+})
+
+var upload = multer({ storage: storage });
+
 
 Router.post("/login", function(req, res, next) {
   authenticate(req.body, res, next)
@@ -29,10 +44,15 @@ Router.post("/login", function(req, res, next) {
     });
 });
 
-Router.post("/register", function(req, res, next) {
+Router.post("/register",upload.single('image'), function(req, res, next) {
   try {
     let userData = req.body;
-    let image = req.files;
+    let image = req.file;
+    if(req.file==undefined){
+      image=undefined;
+    }else{
+      image=req.file.fieldname;
+    }
     authenticateController
       .register(userData, image)
       .then(result => {
@@ -127,9 +147,5 @@ Router.get('/logout',(req,res,next)=>{
   res.status(200).json({ status: 'success' });
 });
 
-// Router.get('/test-token',(req,res,next)=>{
-//   console.log(JSON.stringify(req.cookies));
-//   res.status(200).json({ status: 'success' });
-// });
 
 module.exports = Router;

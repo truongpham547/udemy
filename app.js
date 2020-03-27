@@ -10,7 +10,8 @@ var dotenv = require("dotenv");
 var fs = require("fs");
 var cors = require("cors");
 var bodyParser = require("body-parser");
-var upload = require("express-fileupload");
+// var upload = require("express-fileupload");
+
 
 dotenv.config();
 app.use(
@@ -23,20 +24,22 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use(upload());
+// app.use(upload());
+
+//body-parser
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 app.use("/", indexRouter);
 
-//body-parser
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+
 
 //connect mongodb
 
 const { URL_DB_LOCAL, URL_DB_SERVER } = process.env;
 
 mongoose.connect(
-  `${URL_DB_SERVER}` || `${URL_DB_LOCAL}`,
+  `${URL_DB_LOCAL}` || `${URL_DB_SERVER}`,
   { useNewUrlParser: true, useUnifiedTopology: true },
   err => {
     if (err) {
