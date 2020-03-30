@@ -3,55 +3,16 @@ var courseModel = require("../model/course.model");
 const fs = require("fs");
 var path = require("path");
 
-function createCourse(iduser, courseData, image) {
+function createCourse(data) {
   return new Promise((resolve, reject) => {
     try {
       courseModel
-        .create(
-          courseData.name,
-          iduser,
-          (_image = "default"),
-          courseData.goal,
-          courseData.description,
-          courseData.category,
-          courseData.price,
-          courseData.discount
-        )
+        .create(data)
         .then(newCourse => {
-          if (image) {
-            console.log(image);
-            image = image.image;
-            imageName = newCourse.id + "course" + image.name;
-            try {
-              fs.unlink(
-                path.join(
-                  __dirname,
-                  "../public/upload/course_image/" + imageName.image
-                )
-              );
-            } catch (err) {}
-
-            image.mv(
-              path.join(
-                __dirname,
-                "../public/upload/course_image/" + imageName
-              ),
-              function(errImage) {
-                if (errImage) {
-                  resolve({ status: "error" });
-                }
-              }
-            );
-            course
-              .findOneAndUpdate({ _id: newCourse.id }, { image: imageName })
-              .then(updateCourse => {
-                newCourse.image = imageName;
-                resolve({
-                  status: "success",
-                  newCourse
-                });
-              });
-          } else resolve({ status: "success", newCourse });
+          if (!newCourse) {
+            resolve({ status: "error" });
+          }
+          resolve({ status: "success", newCourse });
         })
         .catch(err => {
           resolve({ status: "error" });
@@ -114,12 +75,11 @@ function gettop() {
   });
 }
 
-function deleteCourse(id, idUser) {
+function deleteCourse(id, iduser) {
   return new Promise((resolve, reject) => {
     try {
-      course.deleteOne({ _id: id, idUser: idUser }).then(result => {
-        if (result) resolve({ status: "success" });
-        else resolve({ status: "error" });
+      courseModel.delete(id, iduser).then(result => {
+        resolve(result);
       });
     } catch (error) {
       resolve({ status: "error" });
@@ -127,61 +87,19 @@ function deleteCourse(id, idUser) {
   });
 }
 
-function updateCourse(idUser, updateCourse, image) {
+function updateCourse(data) {
   return new Promise((resolve, reject) => {
     try {
-      console.log(idUser);
-      course
-        .findOneAndUpdate(
-          { _id: updateCourse.id, idUser: idUser },
-          {
-            name: updateCourse.name,
-            goal: updateCourse.goal,
-            description: updateCourse.description,
-            category: updateCourse.category,
-            price: updateCourse.price,
-            discount: updateCourse.discount
+      courseModel
+        .update(data)
+        .then(updated => {
+          if (!updated) {
+            resolve({ status: "fail" });
           }
-        )
-        .then(result => {
-          if (result) {
-            if (image) {
-              image = image.image;
-              imageName = updateCourse.id + "course" + image.name;
-              try {
-                fs.unlink(
-                  path.join(
-                    __dirname,
-                    "../public/upload/course_image/" + imageName.image
-                  )
-                );
-              } catch (err) {}
-
-              image.mv(
-                path.join(
-                  __dirname,
-                  "../public/upload/course_image/" + imageName
-                ),
-                function(errImage) {
-                  if (errImage) {
-                    resolve({ status: "error" });
-                  }
-                }
-              );
-              course
-                .findOneAndUpdate(
-                  { _id: updateCourse.id },
-                  { image: imageName }
-                )
-                .then(result => {
-                  result.image = imageName;
-                  resolve({
-                    status: "success",
-                    result
-                  });
-                });
-            } else resolve({ status: "success", result });
-          } else resolve({ status: "error" });
+          resolve({ status: "success", updated });
+        })
+        .catch(err => {
+          resolve({ status: "error" });
         });
     } catch (error) {
       resolve({ status: "error" });

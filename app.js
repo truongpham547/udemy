@@ -12,7 +12,6 @@ var cors = require("cors");
 var bodyParser = require("body-parser");
 // var upload = require("express-fileupload");
 
-
 dotenv.config();
 app.use(
   cors({ credentials: true, origin: true, exposedHeaders: ["auth-token"] })
@@ -32,14 +31,12 @@ app.use(bodyParser.json());
 
 app.use("/", indexRouter);
 
-
-
 //connect mongodb
 
 const { URL_DB_LOCAL, URL_DB_SERVER } = process.env;
 
 mongoose.connect(
-  `${URL_DB_LOCAL}` || `${URL_DB_SERVER}`,
+  `${URL_DB_SERVER}` || `${URL_DB_LOCAL}`,
   { useNewUrlParser: true, useUnifiedTopology: true },
   err => {
     if (err) {

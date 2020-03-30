@@ -1,16 +1,38 @@
 const Router = require("express").Router();
 const verifyToken = require("../../middleware/verifyToken");
 const CourseController = require("../../controller/course.controller");
+var multer = require("multer");
 
-Router.post("/create", verifyToken, function(req, res, next) {
+var storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, "public/upload/course_image");
+  },
+  filename: function(req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + "-" + file.originalname);
+  }
+});
+
+var upload = multer({ storage: storage });
+
+Router.post("/create", verifyToken, upload.single("image"), function(
+  req,
+  res,
+  next
+) {
   try {
     let courseData = req.body;
-    let image = req.files;
-    CourseController.createCourse(req.user.id, courseData, image).then(
-      result => {
-        return res.status(200).send(result);
-      }
-    );
+    let image;
+    if (req.file == undefined) {
+      return res.status(200).send({ status: "fail" });
+    } else {
+      image = req.file.filename;
+    }
+    courseData.iduser = req.user.id;
+    courseData.image = image;
+    CourseController.createCourse(courseData).then(result => {
+      return res.status(200).send(result);
+    });
   } catch (error) {
     return res.status(500).send({ status: "error" });
   }
@@ -66,16 +88,25 @@ Router.delete("/delete/:id", verifyToken, function(req, res, next) {
   }
 });
 
-Router.put("/update/:id", verifyToken, function(req, res, next) {
+Router.put("/update/:id", verifyToken, upload.single("image"), function(
+  req,
+  res,
+  next
+) {
   try {
     let courseData = req.body;
-    let image = req.files;
+    let image;
+    if (req.file == undefined) {
+      return res.status(200).send({ status: "fail" });
+    } else {
+      image = req.file.filename;
+    }
     courseData.id = req.params.id;
-    CourseController.updateCourse(req.user.id, courseData, image).then(
-      result => {
-        return res.status(200).send(result);
-      }
-    );
+    courseData.iduser = req.user.id;
+    courseData.image = image;
+    CourseController.updateCourse(courseData).then(result => {
+      return res.status(200).send(result);
+    });
   } catch (error) {
     return res.status(500).send({ status: "error" });
   }

@@ -1,26 +1,19 @@
 var courseSchema = require("../schema/course.schema");
+var fs = require("fs");
+var path = require("path");
 
-function create(
-  name,
-  idUser,
-  image,
-  goal,
-  description,
-  category,
-  price,
-  discount
-) {
+function create(data) {
   return new Promise((resolve, reject) => {
     try {
       var course = new courseSchema();
-      course.name = name;
-      course.idUser = idUser;
-      course.image = image;
-      course.goal = goal;
-      course.description = description;
-      course.category = category;
-      course.price = price;
-      course.discount = discount;
+      course.name = data.name;
+      course.idUser = data.iduser;
+      course.image = data.image;
+      course.goal = data.goal;
+      course.description = data.description;
+      course.category = data.category;
+      course.price = data.price;
+      course.discount = data.discount;
       return course
         .save()
         .then(course => {
@@ -36,10 +29,75 @@ function create(
   });
 }
 
+function update(data) {
+  return new Promise((resolve, reject) => {
+    try {
+      courseSchema
+        .findOneAndUpdate(
+          { _id: data.id, idUser: data.iduser },
+          {
+            name: data.name,
+            goal: data.goal,
+            description: data.description,
+            category: data.category,
+            price: data.price,
+            discount: data.discount,
+            image: data.image
+          }
+        )
+        .then(updated => {
+          try {
+            fs.unlinkSync(
+              path.join(
+                __dirname,
+                "../public/upload/course_image/" + updated.image
+              )
+            );
+          } catch (err) {}
+          updated.image = data.image;
+          updated.name = data.name;
+          updated.goal = data.goal;
+          updated.description = data.description;
+          updated.category = data.category;
+          updated.price = data.price;
+          updated.discount = data.discount;
+          resolve(updated);
+        })
+        .catch(err => {
+          return reject(course);
+        });
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+}
+
+function del(id, iduser) {
+  return new Promise((resolve, reject) => {
+    try {
+      try {
+        fs.unlinkSync(
+          path.join(__dirname, "../public/upload/course_image/" + updated.image)
+        );
+      } catch (err) {}
+      courseSchema.deleteOne({ _id: id, idUser: iduser }).then(result => {
+        if (result) resolve({ status: "success" });
+        resolve({ status: "error" });
+      });
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+}
+
 function gets() {
   return new Promise((resolve, reject) => {
     courseSchema
       .find()
+      .populate("idUser", "name")
+      .populate("category", "name")
       .then(courses => {
         return resolve(courses);
       })
@@ -53,6 +111,8 @@ function getbyCategory(idcategory) {
   return new Promise((resolve, reject) => {
     courseSchema
       .find({ category: idcategory })
+      .populate("idUser", "name")
+      .populate("category", "name")
       .then(courses => {
         return resolve(courses);
       })
@@ -66,6 +126,8 @@ function getfree() {
   return new Promise((resolve, reject) => {
     courseSchema
       .find({ price: 0 })
+      .populate("idUser", "name")
+      .populate("category", "name")
       .then(courses => {
         return resolve(courses);
       })
@@ -79,7 +141,9 @@ function gettop() {
   return new Promise((resolve, reject) => {
     courseSchema
       .find()
-      .sort({ vote: -1 })
+      .populate("idUser", "name")
+      .populate("category", "name")
+      .sort({ ranking: -1 })
       .then(courses => {
         return resolve(courses);
       })
@@ -94,5 +158,7 @@ module.exports = {
   gets: gets,
   getbyCategory: getbyCategory,
   getfree: getfree,
-  gettop: gettop
+  gettop: gettop,
+  update: update,
+  delete: del
 };

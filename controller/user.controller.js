@@ -1,6 +1,6 @@
 const User = require("../schema/user.schema");
 const bcrypt = require("bcryptjs");
-const fs = require("fs");
+var fs = require("fs");
 var path = require("path");
 
 function changePassword(id, oldPassword, newPassword) {
@@ -41,37 +41,18 @@ function changePassword(id, oldPassword, newPassword) {
   });
 }
 
-function changeAvatar(id, image) {
+function changeAvatar(id, _image) {
   return new Promise((resolve, reject) => {
     try {
-      User.findOne({ _id: id }).then(user => {
-        if (!user) {
-          resolve({ status: "error" });
-        }
-        if (user.image != "default") {
-          fs.unlink(
-            path.join(__dirname, "../public/upload/user_image/" + user.image),
-            err => {
-              if (err) {
-                resolve({ status: "error" });
-              }
-            }
+      User.findOneAndUpdate({ _id: id }, { image: _image }).then(user => {
+        try {
+          fs.unlinkSync(
+            path.join(__dirname, "../public/upload/user_image/" + user.image)
           );
-        }
-        image = image.image;
-        imageName = id + "user" + image.name;
-        image.mv(
-          path.join(__dirname, "../public/upload/user_image/" + imageName),
-          function(errImage) {
-            if (errImage) {
-              resolve({ status: "error" });
-            }
-          }
-        );
-        User.findOneAndUpdate({ _id: id }, { image: imageName }).then(user => {
-          user.image = imageName;
-          resolve({ status: "success", user });
-        });
+        } catch (err) {}
+        if (!user) resolve({ status: "error" });
+        user.image = _image;
+        resolve({ status: "success", user });
       });
     } catch (error) {
       resolve({ status: "error" });

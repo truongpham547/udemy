@@ -10,6 +10,7 @@ const courseSchema = new Schema({
   },
   idUser: {
     type: Schema.Types.ObjectId,
+    ref: user,
     required: true
   },
   //hinh nen
@@ -26,6 +27,7 @@ const courseSchema = new Schema({
   },
   category: {
     type: Schema.Types.ObjectId,
+    ref: category,
     required: true
   },
   price: {
@@ -39,10 +41,6 @@ const courseSchema = new Schema({
   },
 
   vote: {
-    totalPoint: {
-      type: Number,
-      default: 0
-    },
     totalVote: {
       type: Number,
       default: 0
@@ -52,7 +50,10 @@ const courseSchema = new Schema({
       default: 0
     }
   },
-
+  ranking: {
+    type: Number,
+    default: 0
+  },
   created_at: {
     type: Date,
     default: Date.now()
