@@ -98,6 +98,7 @@ function gets() {
       .find()
       .populate("idUser", "name")
       .populate("category", "name")
+      .sort({ created_at: -1 })
       .then(courses => {
         return resolve(courses);
       })
@@ -113,6 +114,7 @@ function getbyCategory(idcategory) {
       .find({ category: idcategory })
       .populate("idUser", "name")
       .populate("category", "name")
+      .sort({ created_at: -1 })
       .then(courses => {
         return resolve(courses);
       })
@@ -128,6 +130,7 @@ function getfree() {
       .find({ price: 0 })
       .populate("idUser", "name")
       .populate("category", "name")
+      .sort({ created_at: -1 })
       .then(courses => {
         return resolve(courses);
       })
@@ -143,7 +146,7 @@ function gettop() {
       .find()
       .populate("idUser", "name")
       .populate("category", "name")
-      .sort({ ranking: -1 })
+      .sort({ ranking: -1, created_at: -1 })
       .then(courses => {
         return resolve(courses);
       })
