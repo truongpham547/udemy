@@ -124,6 +124,22 @@ function getbyCategory(idcategory) {
   });
 }
 
+function getbyIduser(iduser) {
+  return new Promise((resolve, reject) => {
+    courseSchema
+      .find({ idUser: iduser })
+      .populate("idUser", "name")
+      .populate("category", "name")
+      .sort({ created_at: -1 })
+      .then(courses => {
+        return resolve(courses);
+      })
+      .catch(err => {
+        return reject(err);
+      });
+  });
+}
+
 function getfree() {
   return new Promise((resolve, reject) => {
     courseSchema
@@ -160,6 +176,7 @@ module.exports = {
   create: create,
   gets: gets,
   getbyCategory: getbyCategory,
+  getbyIduser: getbyIduser,
   getfree: getfree,
   gettop: gettop,
   update: update,

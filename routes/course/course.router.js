@@ -58,6 +58,16 @@ Router.get("/getby-category/:idcategory", function(req, res, next) {
     });
 });
 
+Router.get("/getby-iduser/:iduser", function(req, res, next) {
+  CourseController.getbyIduser(req.params.iduser)
+    .then(courses => {
+      return res.status(200).send(courses);
+    })
+    .catch(err => {
+      return res.status(500).send({ status: "error" });
+    });
+});
+
 Router.get("/get-free", function(req, res, next) {
   CourseController.getfree()
     .then(courses => {

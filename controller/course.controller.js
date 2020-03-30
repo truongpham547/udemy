@@ -49,6 +49,19 @@ function getbyCategory(idcategory) {
   });
 }
 
+function getbyIduser(iduser) {
+  return new Promise((resolve, reject) => {
+    courseModel
+      .getbyIduser(iduser)
+      .then(courses => {
+        return resolve(courses);
+      })
+      .catch(err => {
+        return reject(err);
+      });
+  });
+}
+
 function getfree() {
   return new Promise((resolve, reject) => {
     courseModel
@@ -113,6 +126,7 @@ module.exports = {
   updateCourse: updateCourse,
   getCourses: getCourses,
   getbyCategory: getbyCategory,
+  getbyIduser: getbyIduser,
   getfree: getfree,
   gettop: gettop
 };
