@@ -8,14 +8,14 @@ function createCourse(data) {
     try {
       courseModel
         .create(data)
-        .then(newCourse => {
+        .then((newCourse) => {
           if (!newCourse) {
-            resolve({ status: "error" });
+            resolve({ status: "error DB" });
           }
           resolve({ status: "success", newCourse });
         })
-        .catch(err => {
-          resolve({ status: "error" });
+        .catch((err) => {
+          resolve({ status: "error", err });
         });
     } catch (error) {
       resolve({ status: "error" });
@@ -27,10 +27,10 @@ function getCourses() {
   return new Promise((resolve, reject) => {
     courseModel
       .gets()
-      .then(courses => {
+      .then((courses) => {
         return resolve(courses);
       })
-      .catch(err => {
+      .catch((err) => {
         return reject(err);
       });
   });
@@ -40,10 +40,10 @@ function getbyCategory(idcategory) {
   return new Promise((resolve, reject) => {
     courseModel
       .getbyCategory(idcategory)
-      .then(courses => {
+      .then((courses) => {
         return resolve(courses);
       })
-      .catch(err => {
+      .catch((err) => {
         return reject(err);
       });
   });
@@ -53,10 +53,10 @@ function getbyIduser(iduser) {
   return new Promise((resolve, reject) => {
     courseModel
       .getbyIduser(iduser)
-      .then(courses => {
+      .then((courses) => {
         return resolve(courses);
       })
-      .catch(err => {
+      .catch((err) => {
         return reject(err);
       });
   });
@@ -66,10 +66,10 @@ function getfree() {
   return new Promise((resolve, reject) => {
     courseModel
       .getfree()
-      .then(courses => {
+      .then((courses) => {
         return resolve(courses);
       })
-      .catch(err => {
+      .catch((err) => {
         return reject(err);
       });
   });
@@ -79,10 +79,10 @@ function gettop() {
   return new Promise((resolve, reject) => {
     courseModel
       .gettop()
-      .then(courses => {
+      .then((courses) => {
         return resolve(courses);
       })
-      .catch(err => {
+      .catch((err) => {
         return reject(err);
       });
   });
@@ -91,7 +91,7 @@ function gettop() {
 function deleteCourse(id, iduser) {
   return new Promise((resolve, reject) => {
     try {
-      courseModel.delete(id, iduser).then(result => {
+      courseModel.delete(id, iduser).then((result) => {
         resolve(result);
       });
     } catch (error) {
@@ -105,14 +105,14 @@ function updateCourse(data) {
     try {
       courseModel
         .update(data)
-        .then(updated => {
+        .then((updated) => {
           if (!updated) {
-            resolve({ status: "fail" });
+            resolve({ status: "error DB" });
           }
           resolve({ status: "success", updated });
         })
-        .catch(err => {
-          resolve({ status: "error" });
+        .catch((err) => {
+          resolve({ status: "error", err });
         });
     } catch (error) {
       resolve({ status: "error" });
@@ -128,5 +128,5 @@ module.exports = {
   getbyCategory: getbyCategory,
   getbyIduser: getbyIduser,
   getfree: getfree,
-  gettop: gettop
+  gettop: gettop,
 };
