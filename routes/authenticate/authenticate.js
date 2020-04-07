@@ -5,7 +5,9 @@ var authenticate = require("../../config/authenticate");
 var verifyToken = require("../../middleware/verifyToken");
 var userController = require("../../controller/user.controller");
 var multer  = require('multer');
-
+const { check, validationResult,body } = require('express-validator');
+const fs=require('fs');
+const path= require('path');
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -44,7 +46,46 @@ Router.post("/login", function(req, res, next) {
     });
 });
 
-Router.post("/register",upload.single('image'), function(req, res, next) {
+
+let validateRegisterOption=[
+    body('image').custom((value, { req }) => {
+      if(req.file == undefined){
+        return true;
+      }else{
+        var mimetype=req.file.mimetype;
+        var type=mimetype.split("/")[1];
+        if(type!="jpeg" && type!="png" && type!="jpg"){
+          fs.unlink(path.join(__dirname, '../../public/upload/user_image/')+req.file.filename,(err)=>{
+            console.log(err);
+          });
+          throw new Error('Các định dạng file yêu cầu là JPEG, PNG, JPG');
+        }
+        return true;
+      }
+    }),
+    check('email').exists().withMessage("Vui lòng nhập Email").isEmail().withMessage("Email không hợp lệ"),
+    body('password').custom((value, { req }) => {
+      if(value.length < 8){
+        throw new Error('Mật khẩu phải dài hơn 8 kí tự');
+      }
+      if(!value.match(/.*[A-Z]+.*/)){
+        throw new Error('Mật khẩu phải có ít nhất 1 chữ hoa và 1 kí tự số');
+      }
+      if(!value.match(/.*[0-9]+.*/)){
+        throw new Error('Mật khẩu phải có ít nhất 1 chữ hoa và 1 kí tự số');
+      }
+      return true;
+    }),
+    check('name').exists().withMessage("Vui lòng nhập tên").isLength({min:3}).withMessage("Tên phải dài hơn 3 kí tự"),
+    check('phone').exists().withMessage("Vui lòng nhập số điện thoại").isMobilePhone().withMessage("Số điện thoại không hợp lệ"),
+    check('gender').exists().withMessage("Vui lòng chọn giới tính")
+]
+
+Router.post("/register",[upload.single('image'),validateRegisterOption],function(req, res, next) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+  }
   try {
     let userData = req.body;
     let image = req.file;
@@ -78,6 +119,8 @@ Router.post("/register",upload.single('image'), function(req, res, next) {
     console.log(error);
   }
 });
+
+
 
 Router.put("/change-password", verifyToken, function(req, res, next) {
   try {
@@ -123,7 +166,27 @@ Router.post("/forgot-password", (req, res, next) => {
     });
 });
 
-Router.post("/reset-password", (req, res, next) => {
+
+let validateResetPassword=[
+  body('password').custom((value, { req }) => {
+    if(value.length < 8){
+      throw new Error('Mật khẩu phải dài hơn 8 kí tự');
+    }
+    if(!value.match(/.*[A-Z]+.*/)){
+      throw new Error('Mật khẩu phải có ít nhất 1 chữ hoa và 1 kí tự số');
+    }
+    if(!value.match(/.*[0-9]+.*/)){
+      throw new Error('Mật khẩu phải có ít nhất 1 chữ hoa và 1 kí tự số');
+    }
+    return true;
+  }),
+];
+
+Router.post("/reset-password",validateResetPassword, (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+  }
   let data = req.body;
   authenticateController
     .resetPassword(data)

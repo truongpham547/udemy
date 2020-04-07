@@ -1,7 +1,10 @@
 const Router = require("express").Router();
 const lessonController = require("../../controller/lesson.controller");
 var multer  = require('multer');
-
+const { check, validationResult,body } = require('express-validator');
+const fs=require('fs');
+const path= require('path');
+var verifyToken = require("../../middleware/verifyToken");
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -18,7 +21,62 @@ var upload = multer({ storage: storage });
 
 var cpUpload = upload.fields([{ name: 'videos', maxCount: 1 }, { name: 'docs', maxCount: 5 }])
 
-Router.post('/create-lesson',cpUpload,function (req, res, next) {
+let validateLesson=[
+  body('docs').custom((value, { req }) => {
+    if(req.files['docs'] == undefined){
+      throw new Error('Vui lòng chọn file văn bản');
+    }else{
+      for(let i=0;i<req.files['docs'].length;i++){
+        var mimetype=req.files['docs'][i].originalname;
+        var type=mimetype.split(".")[mimetype.split(".").length-1];
+        if(type!="doc" && type!="pdf" && type!="txt" && type!="xlsx" && type!="docx"){
+          for(let j=0;j<req.files['docs'].length;j++){
+            fs.unlink(path.join(__dirname, '../../public/upload/lesson/')+req.files['docs'][j].filename,(err)=>{
+              // console.log(err);
+            });
+          }
+          throw new Error('Các định dạng file yêu cầu là doc, pdf, xlsx ,txt');
+        }
+      }
+      return true;
+    }
+  }),
+  body('videos').custom((value, { req }) => {
+    if(req.files['videos'] == undefined){
+      throw new Error('Vui lòng chọn tập tin video');
+    }else{
+      for(let i=0;i<req.files['videos'].length;i++){
+        var mimetype=req.files['videos'][i].originalname;
+        var type=mimetype.split(".")[mimetype.split(".").length-1];
+        if(type!="mp4"){
+          for(let j=0;j<req.files['videos'].length;j++){
+            fs.unlink(path.join(__dirname, '../../public/upload/lesson/')+req.files['videos'][j].filename,(err)=>{
+              // console.log(err);
+            });
+          }
+          throw new Error('Định dạng video hỗ trợ là Mp4');
+        }
+      }
+      return true;
+    }
+  }),
+  body('multipleChoices').custom((value, { req }) => {
+    let newValue=JSON.parse(value);
+    console.log(newValue.length);
+    for(let i=0;i<newValue.length;i++){
+      if(newValue[i].A ==undefined || newValue[i].B ==undefined || newValue[i].C ==undefined || newValue[i].D ==undefined || newValue[i].answer ==undefined){
+        throw new Error('Câu trắc nghiệm không đúng form yêu cầu gồm A, B, C, D và đáp án đúng');
+      }
+    }
+    return true;
+  }),
+];
+
+Router.post('/create-lesson',[verifyToken,cpUpload,validateLesson],function (req, res, next) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+  }
   let multipleChoices = JSON.parse(req.body.multipleChoices);
   let video = req.files['videos'][0].filename;
   let docs = Array();
@@ -43,7 +101,7 @@ Router.get('/get-lesson-by-id-course/:idCourse', function (req, res, next) {
   });
 });
 
-Router.delete('/delete-lesson-file/:fileName',function(req,res,next){
+Router.delete('/delete-lesson-file/:fileName',verifyToken,function(req,res,next){
   lessonController.deleteFileOfLesson(req.params.fileName).then(deleted=>{
     return res.status(200).send(deleted);
   }).catch(err=>{
@@ -52,7 +110,7 @@ Router.delete('/delete-lesson-file/:fileName',function(req,res,next){
   })
 });
 
-Router.delete('/delete-lesson/:idLesson',(req,res,next)=>{
+Router.delete('/delete-lesson/:idLesson',verifyToken,(req,res,next)=>{
   lessonController.deleteLesson(req.params.idLesson).then(deleted=>{
     return res.status(200).send(deleted);
   }).catch(err=>{
@@ -61,7 +119,7 @@ Router.delete('/delete-lesson/:idLesson',(req,res,next)=>{
   })
 });
 
-Router.put('/update-lesson/:idLesson',(req,res,next)=>{
+Router.put('/update-lesson/:idLesson',verifyToken,(req,res,next)=>{
   lessonController.updateLesson(req.params.idLesson,req.body).then(newLesson=>{
     return res.status(200).send(newLesson);
   }).catch(err=>{
@@ -70,7 +128,7 @@ Router.put('/update-lesson/:idLesson',(req,res,next)=>{
   })
 });
 
-Router.delete('/delete-a-multiple-choice/:idLesson/:idMultipleChoice',(req,res,next)=>{
+Router.delete('/delete-a-multiple-choice/:idLesson/:idMultipleChoice',verifyToken,(req,res,next)=>{
   lessonController.deleteMultipleChoice(req.params.idLesson,req.params.idMultipleChoice).then(deleted=>{
     return res.status(200).send(deleted);
   }).catch(err=>{
@@ -79,7 +137,25 @@ Router.delete('/delete-a-multiple-choice/:idLesson/:idMultipleChoice',(req,res,n
   })
 });
 
-Router.post('/add-an-multiple-choice',(req,res,next)=>{
+
+
+let validateAddAMultipleChoice=[
+  body('multipleChoice').custom((value, { req }) => {
+    let newValue=(value);
+    console.log(newValue.length);
+    if(newValue.A ==undefined || newValue.B ==undefined || newValue.C ==undefined || newValue.D ==undefined || newValue.answer ==undefined){
+      throw new Error('Câu trắc nghiệm không đúng form yêu cầu gồm A, B, C, D và đáp án đúng');
+    }
+    return true;
+  })
+];
+
+
+Router.post('/add-an-multiple-choice',[verifyToken,validateAddAMultipleChoice],(req,res,next)=>{
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+  }
   lessonController.addAnMultipleChoice(req.body.idLesson,(req.body.multipleChoice)).then(result=>{
     return res.status(200).send(result);
   }).catch(err=>{

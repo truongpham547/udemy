@@ -1,7 +1,8 @@
 const Router = require("express").Router();
 const categoryController = require("../../controller/category.controller");
+var verifyToken = require("../../middleware/verifyToken");
 
-Router.post("/add-category", function(req, res, next) {
+Router.post("/add-category",verifyToken, function(req, res, next) {
     categoryController.addCategory(req.body).then(result=>{
         if(result.status){
             return res.status(200).send(result.category);
@@ -14,7 +15,7 @@ Router.post("/add-category", function(req, res, next) {
     })
 });
 
-Router.put("/update-category/:id", function(req, res, next) {
+Router.put("/update-category/:id", verifyToken,function(req, res, next) {
     categoryController.updateCategory(req.params.id,req.body).then(result=>{
         if(result.status){
             return res.status(200).send(result.category);
@@ -27,7 +28,7 @@ Router.put("/update-category/:id", function(req, res, next) {
     })
 });
 
-Router.delete("/delete-category/:id", function(req, res, next) {
+Router.delete("/delete-category/:id", verifyToken,function(req, res, next) {
     categoryController.deleteCategory(req.params.id).then(deletedCategory=>{
         return res.status(200).send(deletedCategory);
     }).catch(err=>{

@@ -11,6 +11,7 @@ var fs = require("fs");
 var cors = require("cors");
 var bodyParser = require("body-parser");
 // var upload = require("express-fileupload");
+var expressValidator = require('express-validator');
 
 dotenv.config();
 app.use(
@@ -28,6 +29,8 @@ app.use(express.static(path.join(__dirname, "public")));
 //body-parser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+
 
 app.use("/", indexRouter);
 
