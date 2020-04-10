@@ -92,7 +92,7 @@ Router.post("/register",[upload.single('image'),validateRegisterOption],function
     if(req.file==undefined){
       image=undefined;
     }else{
-      image=req.file.fieldname;
+      image=req.file.filename;
     }
     authenticateController
       .register(userData, image)

@@ -1,9 +1,10 @@
 var categorySchema = require('../schema/category.schema');
 
-function addCategory(name){
+function addCategory(name,image){
     return new Promise((resolve,reject)=>{
         let category = new categorySchema();
         category.name = name;
+        category.image=image;
         category.save().then(newCategory=>{
             return resolve(newCategory);
         }).catch(err=>{

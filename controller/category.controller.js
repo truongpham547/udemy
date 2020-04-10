@@ -1,13 +1,14 @@
 var categoryModel = require("../model/category.model");
+const fs=require('fs');
+const path = require('path');
 
-
-function addCategory(userData) {
+function addCategory(userData,image) {
   return new Promise((resolve, reject) => {
     categoryModel.isExist(userData.name).then(result=>{
         if(result){
             return resolve({status:false,"message":"Danh mục đã tồn tại"});
         }else{
-            categoryModel.addCategory(userData.name).then(newCategory=>{
+            categoryModel.addCategory(userData.name,image).then(newCategory=>{
                 return resolve({status:true,category:newCategory});
             }).catch(err=>{
                 return reject(err);
@@ -41,11 +42,18 @@ function getCategories(){
 
 function deleteCategory(id){
     return new Promise((resolve,reject)=>{
-        categoryModel.deleteCategory(id).then(categoryDeleted=>{
-            return resolve(categoryDeleted);
+        categoryModel.get(id).then(category=>{
+            fs.unlink(path.join(__dirname, '../public/upload/category/')+category.image,(err)=>{
+                console.log(err);
+            });
+            categoryModel.deleteCategory(id).then(categoryDeleted=>{
+                return resolve(categoryDeleted);
+            }).catch(err=>{
+                return reject(err);
+            })
         }).catch(err=>{
-            return reject(err);
-        })
+    
+        });
     })
 }
 
