@@ -16,10 +16,10 @@ function create(data) {
       course.discount = data.discount;
       return course
         .save()
-        .then(course => {
+        .then((course) => {
           return resolve(course);
         })
-        .catch(err => {
+        .catch((err) => {
           return reject(course);
         });
     } catch (err) {
@@ -32,6 +32,32 @@ function create(data) {
 function update(data) {
   return new Promise((resolve, reject) => {
     try {
+      if (data.image == null) {
+        courseSchema
+          .findOneAndUpdate(
+            { _id: data.id, idUser: data.iduser },
+            {
+              name: data.name,
+              goal: data.goal,
+              description: data.description,
+              category: data.category,
+              price: data.price,
+              discount: data.discount,
+            }
+          )
+          .then((updated) => {
+            updated.name = data.name;
+            updated.goal = data.goal;
+            updated.description = data.description;
+            updated.category = data.category;
+            updated.price = data.price;
+            updated.discount = data.discount;
+            resolve(updated);
+          })
+          .catch((err) => {
+            return reject(course);
+          });
+      }
       courseSchema
         .findOneAndUpdate(
           { _id: data.id, idUser: data.iduser },
@@ -42,10 +68,10 @@ function update(data) {
             category: data.category,
             price: data.price,
             discount: data.discount,
-            image: data.image
+            image: data.image,
           }
         )
-        .then(updated => {
+        .then((updated) => {
           try {
             fs.unlinkSync(
               path.join(
@@ -63,7 +89,7 @@ function update(data) {
           updated.discount = data.discount;
           resolve(updated);
         })
-        .catch(err => {
+        .catch((err) => {
           return reject(course);
         });
     } catch (err) {
@@ -81,7 +107,7 @@ function del(id, iduser) {
           path.join(__dirname, "../public/upload/course_image/" + updated.image)
         );
       } catch (err) {}
-      courseSchema.deleteOne({ _id: id, idUser: iduser }).then(result => {
+      courseSchema.deleteOne({ _id: id, idUser: iduser }).then((result) => {
         if (result) resolve({ status: "success" });
         resolve({ status: "error" });
       });
@@ -99,10 +125,10 @@ function gets() {
       .populate("idUser", "name")
       .populate("category", "name")
       .sort({ created_at: -1 })
-      .then(courses => {
+      .then((courses) => {
         return resolve(courses);
       })
-      .catch(err => {
+      .catch((err) => {
         return reject(err);
       });
   });
@@ -115,10 +141,10 @@ function getbyCategory(idcategory) {
       .populate("idUser", "name")
       .populate("category", "name")
       .sort({ created_at: -1 })
-      .then(courses => {
+      .then((courses) => {
         return resolve(courses);
       })
-      .catch(err => {
+      .catch((err) => {
         return reject(err);
       });
   });
@@ -131,10 +157,10 @@ function getbyIduser(iduser) {
       .populate("idUser", "name")
       .populate("category", "name")
       .sort({ created_at: -1 })
-      .then(courses => {
+      .then((courses) => {
         return resolve(courses);
       })
-      .catch(err => {
+      .catch((err) => {
         return reject(err);
       });
   });
@@ -147,10 +173,10 @@ function getfree() {
       .populate("idUser", "name")
       .populate("category", "name")
       .sort({ created_at: -1 })
-      .then(courses => {
+      .then((courses) => {
         return resolve(courses);
       })
-      .catch(err => {
+      .catch((err) => {
         return reject(err);
       });
   });
@@ -163,10 +189,10 @@ function gettop() {
       .populate("idUser", "name")
       .populate("category", "name")
       .sort({ ranking: -1, created_at: -1 })
-      .then(courses => {
+      .then((courses) => {
         return resolve(courses);
       })
-      .catch(err => {
+      .catch((err) => {
         return reject(err);
       });
   });
@@ -180,5 +206,5 @@ module.exports = {
   getfree: getfree,
   gettop: gettop,
   update: update,
-  delete: del
+  delete: del,
 };
