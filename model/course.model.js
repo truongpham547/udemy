@@ -57,41 +57,42 @@ function update(data) {
           .catch((err) => {
             return reject(course);
           });
+      } else {
+        courseSchema
+          .findOneAndUpdate(
+            { _id: data.id, idUser: data.iduser },
+            {
+              name: data.name,
+              goal: data.goal,
+              description: data.description,
+              category: data.category,
+              price: data.price,
+              discount: data.discount,
+              image: data.image,
+            }
+          )
+          .then((updated) => {
+            try {
+              fs.unlinkSync(
+                path.join(
+                  __dirname,
+                  "../public/upload/course_image/" + updated.image
+                )
+              );
+            } catch (err) {}
+            updated.image = data.image;
+            updated.name = data.name;
+            updated.goal = data.goal;
+            updated.description = data.description;
+            updated.category = data.category;
+            updated.price = data.price;
+            updated.discount = data.discount;
+            resolve(updated);
+          })
+          .catch((err) => {
+            return reject(course);
+          });
       }
-      courseSchema
-        .findOneAndUpdate(
-          { _id: data.id, idUser: data.iduser },
-          {
-            name: data.name,
-            goal: data.goal,
-            description: data.description,
-            category: data.category,
-            price: data.price,
-            discount: data.discount,
-            image: data.image,
-          }
-        )
-        .then((updated) => {
-          try {
-            fs.unlinkSync(
-              path.join(
-                __dirname,
-                "../public/upload/course_image/" + updated.image
-              )
-            );
-          } catch (err) {}
-          updated.image = data.image;
-          updated.name = data.name;
-          updated.goal = data.goal;
-          updated.description = data.description;
-          updated.category = data.category;
-          updated.price = data.price;
-          updated.discount = data.discount;
-          resolve(updated);
-        })
-        .catch((err) => {
-          return reject(course);
-        });
     } catch (err) {
       console.log(err);
       reject(err);

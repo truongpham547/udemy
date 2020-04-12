@@ -114,7 +114,6 @@ Router.put("/update/:id", verifyToken, upload.single("image"), function (
     courseData.id = req.params.id;
     courseData.iduser = req.user.id;
     courseData.image = image;
-
     CourseController.updateCourse(courseData).then((result) => {
       return res.status(200).send(result);
     });
