@@ -64,7 +64,7 @@ let validateLesson=[
     let newValue=JSON.parse(value);
     console.log(newValue.length);
     for(let i=0;i<newValue.length;i++){
-      if(newValue[i].A ==undefined || newValue[i].B ==undefined || newValue[i].C ==undefined || newValue[i].D ==undefined || newValue[i].answer ==undefined){
+      if(newValue[i].A ==undefined || newValue[i].B ==undefined || newValue[i].C ==undefined || newValue[i].D ==undefined || newValue[i].answer ==undefined|| newValue[i].question ==undefined){
         throw new Error('Câu trắc nghiệm không đúng form yêu cầu gồm A, B, C, D và đáp án đúng');
       }
     }
@@ -143,7 +143,7 @@ let validateAddAMultipleChoice=[
   body('multipleChoice').custom((value, { req }) => {
     let newValue=(value);
     console.log(newValue.length);
-    if(newValue.A ==undefined || newValue.B ==undefined || newValue.C ==undefined || newValue.D ==undefined || newValue.answer ==undefined){
+    if(newValue.A ==undefined || newValue.B ==undefined || newValue.C ==undefined || newValue.D ==undefined || newValue.answer ==undefined || newValue.question ==undefined ){
       throw new Error('Câu trắc nghiệm không đúng form yêu cầu gồm A, B, C, D và đáp án đúng');
     }
     return true;

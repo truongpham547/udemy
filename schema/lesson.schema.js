@@ -20,6 +20,10 @@ const lessonSchema = Schema({
     doc:[],
     multipleChoices:[
         {
+            question:{
+                type:String,
+                required:true
+            },
             A:{
                 type:String, 
                 required:true
