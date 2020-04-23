@@ -6,7 +6,7 @@ Router.post("/create-join", function(req, res, next) {
         let userData = req.body;
         joinController.joinCourse(userData).then(result => {
             if(result.status){
-                return res.status(200).send(result.newJoin);
+                return res.status(200).send(result.data);
             }else{
                 return res.status(500).send({message:result.message});
             }
