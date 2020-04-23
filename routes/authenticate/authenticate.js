@@ -210,5 +210,18 @@ Router.get('/logout',(req,res,next)=>{
   res.status(200).json({ status: 'success' });
 });
 
+Router.get('/is-logged',verifyToken,(req,res,next)=>{
+  if(req.user){
+    userController.getUserById(req.user.id).then(user=>{
+      res.status(200).json(user);
+    }).catch(err=>{
+      console.log(err);
+      res.status(500).json({"message":"Server go down"});
+    })
+  }else{
+    res.status(200).send(null);
+  }
+})
+
 
 module.exports = Router;

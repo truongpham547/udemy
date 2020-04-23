@@ -86,8 +86,19 @@ function changeProfile(id, data) {
   });
 }
 
+function getUserById(id){
+  return new Promise((resolve,reject)=>{
+    User.findOne({_id:id}).then(user=>{
+      resolve(user);
+    }).catch(err=>{
+      reject(err);
+    })
+  })
+}
+
 module.exports = {
   changePassword: changePassword,
   changeAvatar: changeAvatar,
-  changeProfile: changeProfile
+  changeProfile: changeProfile,
+  getUserById:getUserById
 };
