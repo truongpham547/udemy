@@ -23,9 +23,9 @@ function deleteCategory(id){
     })
 }
 
-function updateCategory(id,name){
+function updateCategory(id,name,image){
     return new Promise((resolve,reject)=>{
-        categorySchema.findOneAndUpdate({_id:id},{name:name},{new:true}).then(newCategory=>{
+        categorySchema.findOneAndUpdate({_id:id},{name:name,image:image},{new:true}).then(newCategory=>{
             return resolve(newCategory);
         }).catch(err=>{
             return reject(err);

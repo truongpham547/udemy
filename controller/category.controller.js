@@ -57,13 +57,13 @@ function deleteCategory(id){
     })
 }
 
-function updateCategory(id,userData){
+function updateCategory(id,userData,image){
     return new Promise((resolve,reject)=>{
         categoryModel.isExist(userData.name).then(result=>{
             if(result){
                 return resolve({status:false,message:"danh mục đã tồn tại"});
             }else{
-                categoryModel.updateCategory(id,userData.name).then(newCategory=>{
+                categoryModel.updateCategory(id,userData.name,image).then(newCategory=>{
                     return resolve({status:true,category:newCategory});
                 }).catch(err=>{
                     return reject(err);

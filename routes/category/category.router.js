@@ -58,8 +58,8 @@ Router.post("/add-category",[verifyToken,upload.single('image'),validateCategory
     })
 });
 
-Router.put("/update-category/:id", verifyToken,function(req, res, next) {
-    categoryController.updateCategory(req.params.id,req.body).then(result=>{
+Router.put("/update-category/:id", [verifyToken,upload.single('image'),validateCategory],function(req, res, next) {
+    categoryController.updateCategory(req.params.id,req.body,req.file.filename).then(result=>{
         if(result.status){
             return res.status(200).send(result.category);
         }else{
