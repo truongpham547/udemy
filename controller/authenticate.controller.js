@@ -35,7 +35,7 @@ function register(userData, image) {
           if (result == true) {
             resolve({ message: "Email đã tồn tại" });
           } else {
-            var imageName = "default";
+            var imageName = "default.jpg";
             console.log(image);
             if(image!=undefined){
               imageName=image;
