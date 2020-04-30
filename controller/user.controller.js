@@ -6,7 +6,7 @@ var path = require("path");
 function changePassword(id, oldPassword, newPassword) {
   return new Promise((resolve, reject) => {
     try {
-      User.findOne({ _id: id }).then(user => {
+      User.findOne({ _id: id }).then((user) => {
         if (!user) {
           resolve({ status: "error" });
         }
@@ -16,13 +16,13 @@ function changePassword(id, oldPassword, newPassword) {
           }
           if (isMatch) {
             try {
-              bcrypt.hash(newPassword, bcrypt.genSaltSync(10)).then(hashed =>
+              bcrypt.hash(newPassword, bcrypt.genSaltSync(10)).then((hashed) =>
                 User.findOneAndUpdate(
                   { _id: id },
                   {
-                    password: hashed
+                    password: hashed,
                   }
-                ).then(user => {
+                ).then((user) => {
                   user.password = hashed;
                   resolve({ status: "success", user });
                 })
@@ -44,7 +44,7 @@ function changePassword(id, oldPassword, newPassword) {
 function changeAvatar(id, _image) {
   return new Promise((resolve, reject) => {
     try {
-      User.findOneAndUpdate({ _id: id }, { image: _image }).then(user => {
+      User.findOneAndUpdate({ _id: id }, { image: _image }).then((user) => {
         try {
           fs.unlinkSync(
             path.join(__dirname, "../public/upload/user_image/" + user.image)
@@ -70,9 +70,9 @@ function changeProfile(id, data) {
           phone: data.phone,
           address: data.address,
           description: data.description,
-          gender: data.gender
+          gender: data.gender,
         }
-      ).then(user => {
+      ).then((user) => {
         user.name = data.name;
         user.phone = data.phone;
         user.address = data.address;
@@ -86,19 +86,75 @@ function changeProfile(id, data) {
   });
 }
 
-function getUserById(id){
-  return new Promise((resolve,reject)=>{
-    User.findOne({_id:id}).then(user=>{
-      resolve(user);
-    }).catch(err=>{
-      reject(err);
-    })
-  })
+function getUserById(id) {
+  return new Promise((resolve, reject) => {
+    User.findOne({ _id: id })
+      .then((user) => {
+        resolve(user);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
+
+function getUsers() {
+  return new Promise((resolve, reject) => {
+    User.find(
+      {},
+      {
+        role: 1,
+        name: 1,
+        email: 1,
+        phone: 1,
+        address: 1,
+        description: 1,
+        image: 1,
+        gender: 1,
+        created_at: 1,
+      }
+    )
+      .sort({ created_at: -1 })
+      .then((user) => {
+        resolve(user);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
+
+function deleteuser(id) {
+  return new Promise((resolve, reject) => {
+    User.deleteOne({ _id: id })
+      .then((user) => {
+        resolve(user);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+}
+
+function grantadmin(id) {
+  return new Promise((resolve, reject) => {
+    User.findOneAndUpdate({ _id: id }, { role: "admin" })
+      .then((user) => {
+        user.role = "admin";
+        resolve(user);
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
 }
 
 module.exports = {
   changePassword: changePassword,
   changeAvatar: changeAvatar,
   changeProfile: changeProfile,
-  getUserById:getUserById
+  getUserById: getUserById,
+  getUsers: getUsers,
+  deleteuser: deleteuser,
+  grantadmin: grantadmin,
 };
