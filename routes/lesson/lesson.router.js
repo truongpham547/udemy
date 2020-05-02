@@ -251,7 +251,17 @@ Router.put('/add-list-multiple-choice/:idLesson',[verifyToken,validateListMultip
     console.log(err);
     return res.status(500).send({"message":"Lỗi server"});
   })
-})
+});
+
+
+Router.get('/get-lesson-by-id/:idLesson', function (req, res, next) {
+  lessonController.getLessonById(req.params.idLesson).then(lesson=>{
+    res.status(200).send(lesson);
+  }).catch(err=>{
+    console.log(err);
+    res.status(500).send({"message":"Lỗi server"});
+  });
+});
 
 
 module.exports = Router;

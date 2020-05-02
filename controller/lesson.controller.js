@@ -138,6 +138,16 @@ function addListMultipleChoice(idLesson,multipleChoice){
     })
 }
 
+function getLessonById(idLesson){
+    return new Promise((resolve,reject)=>{
+        lessonSchema.findOne({_id: idLesson}).then(result=>{
+            resolve(result);
+        }).catch(err=>{
+            reject(err);
+        });
+    })
+}
+
 
 module.exports={
     createLesson:createLesson,
@@ -149,5 +159,6 @@ module.exports={
     addAnMultipleChoice:addAnMultipleChoice,
     addVideo:addVideo,
     addDoc:addDoc,
-    addListMultipleChoice:addListMultipleChoice
+    addListMultipleChoice:addListMultipleChoice,
+    getLessonById:getLessonById
 }
