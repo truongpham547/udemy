@@ -59,17 +59,7 @@ let validateLesson=[
       }
       return true;
     }
-  }),
-  body('multipleChoices').custom((value, { req }) => {
-    let newValue=JSON.parse(value);
-    console.log(newValue.length);
-    for(let i=0;i<newValue.length;i++){
-      if(newValue[i].A ==undefined || newValue[i].B ==undefined || newValue[i].C ==undefined || newValue[i].D ==undefined || newValue[i].answer ==undefined|| newValue[i].question ==undefined){
-        throw new Error('Câu trắc nghiệm không đúng form yêu cầu gồm A, B, C, D và đáp án đúng');
-      }
-    }
-    return true;
-  }),
+  })
 ];
 
 Router.post('/create-lesson',[verifyToken,cpUpload,validateLesson],function (req, res, next) {
@@ -77,13 +67,12 @@ Router.post('/create-lesson',[verifyToken,cpUpload,validateLesson],function (req
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
   }
-  let multipleChoices = JSON.parse(req.body.multipleChoices);
   let video = req.files['videos'][0].filename;
   let docs = Array();
   for(let i=0 ; i<req.files['docs'].length;i++){
     docs.push(req.files['docs'][i].filename);
   }
-  lessonController.createLesson(multipleChoices,docs,video,req.body).then(newLesson=>{
+  lessonController.createLesson(docs,video,req.body).then(newLesson=>{
     res.status(200).send(newLesson);
   }).catch(err=>{
     console.log(err);
@@ -144,19 +133,119 @@ let validateAddAMultipleChoice=[
     let newValue=(value);
     console.log(newValue.length);
     if(newValue.A ==undefined || newValue.B ==undefined || newValue.C ==undefined || newValue.D ==undefined || newValue.answer ==undefined || newValue.question ==undefined ){
-      throw new Error('Câu trắc nghiệm không đúng form yêu cầu gồm A, B, C, D và đáp án đúng');
+      throw new Error('Câu trắc nghiệm không đúng form yêu cầu gồm A, B, C, D, câu hỏi và đáp án đúng');
     }
     return true;
   })
 ];
 
 
-Router.post('/add-an-multiple-choice',[verifyToken,validateAddAMultipleChoice],(req,res,next)=>{
+Router.put('/add-an-multiple-choice/:idLesson',[verifyToken,validateAddAMultipleChoice],(req,res,next)=>{
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
   }
-  lessonController.addAnMultipleChoice(req.body.idLesson,(req.body.multipleChoice)).then(result=>{
+  lessonController.addAnMultipleChoice(req.params.idLesson,(req.body.multipleChoice)).then(result=>{
+    return res.status(200).send(result);
+  }).catch(err=>{
+    console.log(err);
+    return res.status(500).send({"message":"Lỗi server"});
+  })
+})
+
+
+
+let validateVideo=[
+  body('videos').custom((value, { req }) => {
+    if(req.file == undefined){
+      throw new Error('Vui lòng chọn tập tin video');
+    }else{
+      var mimetype=req.file.originalname;
+      var type=mimetype.split(".")[mimetype.split(".").length-1];
+      if(type!="mp4"){
+        fs.unlink(path.join(__dirname, '../../public/upload/lesson/')+req.file.filename,(err)=>{
+          // console.log(err);
+        });
+        
+        throw new Error('Định dạng video hỗ trợ là Mp4');
+      }
+      return true;
+    }
+  })
+];
+
+Router.put('/add-video/:idLesson',[verifyToken,upload.single('videos'),validateVideo],(req,res,next)=>{
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+  }
+  lessonController.addVideo(req.params.idLesson,req.file.filename).then(newLesson=>{
+    res.status(200).send(newLesson);
+  }).catch(err=>{
+    console.log(err);
+    return res.status(500).send({"message":"Lỗi server"});
+  })
+});
+
+
+
+var uploadDocs = upload.fields([{ name: 'docs', maxCount: 5 }])
+
+
+let validateDoc=[
+  body('docs').custom((value, { req }) => {
+    if(req.file == undefined){
+      throw new Error('Vui lòng chọn file văn bản');
+    }else{
+        var mimetype=req.file.originalname;
+        var type=mimetype.split(".")[mimetype.split(".").length-1];
+        if(type!="doc" && type!="pdf" && type!="txt" && type!="xlsx" && type!="docx"){
+            fs.unlink(path.join(__dirname, '../../public/upload/lesson/')+req.file.filename,(err)=>{
+              // console.log(err);
+            });
+          throw new Error('Các định dạng file yêu cầu là doc, pdf, xlsx ,txt');
+        }
+      return true;
+    }
+  }),
+];
+
+Router.put('/add-docs/:idLesson',[verifyToken,upload.single('docs'),validateDoc],(req,res,next)=>{
+  // console.log(req.file);
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+  }
+  lessonController.addDoc(req.params.idLesson,req.file.filename).then(newLesson=>{
+    res.status(200).send(newLesson);
+  }).catch(err=>{
+    console.log(err);
+    return res.status(500).send({"message":"Lỗi server"});
+  })
+});
+
+
+let validateListMultipleChoice=[
+  body('multipleChoices').custom((newValue, { req }) => {
+    console.log(req.body.multipleChoices);
+    console.log(newValue.length);
+    for(let i=0;i<newValue.length;i++){
+      if(newValue[i].A ==undefined || newValue[i].B ==undefined || newValue[i].C ==undefined || newValue[i].D ==undefined || newValue[i].answer ==undefined|| newValue[i].question ==undefined){
+        throw new Error('Câu trắc nghiệm không đúng form yêu cầu gồm A, B, C, D và đáp án đúng');
+      }
+    }
+    return true;
+  }),
+];
+
+
+Router.put('/add-list-multiple-choice/:idLesson',[verifyToken,validateListMultipleChoice],(req,res,next)=>{
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+  }
+
+  lessonController.addListMultipleChoice(req.params.idLesson,req.body.multipleChoices).then(result=>{
     return res.status(200).send(result);
   }).catch(err=>{
     console.log(err);

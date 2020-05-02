@@ -2,10 +2,9 @@ const lessonSchema = require('../schema/lesson.schema');
 const fs=require('fs');
 const path= require('path');
 
-function createLesson(multipleChoices,docs,video,data){
+function createLesson(docs,video,data){
     return new Promise((resolve,reject)=>{
         let lesson = new lessonSchema();
-        lesson.multipleChoices= multipleChoices;
         lesson.doc=docs;
         lesson.video=video;
         lesson.idCourse=data.idCourse;
@@ -97,6 +96,48 @@ function addAnMultipleChoice(idLesson,multipleChoice){
     })
 }
 
+function addVideo(idLesson,video){
+    return new Promise((resolve,reject)=>{
+        lessonSchema.update({_id: idLesson},{
+            video:video
+        }).then(newLesson=>{
+            resolve(newLesson);
+        }).catch(err=>{
+            reject(err);
+        });
+    })
+}
+
+function addDoc(idLesson,doc){
+    return new Promise((resolve,reject)=>{
+        lessonSchema.update(
+            {_id: idLesson},
+            {$push: {doc: doc}},
+            function(err,result){
+                if(err){
+                    console.log(err);
+                    return reject(err);
+                }
+                console.log(result)
+                return resolve(result);
+            }
+        );
+    })
+}
+
+function addListMultipleChoice(idLesson,multipleChoice){
+    return new Promise((resolve,reject)=>{
+        lessonSchema.update(
+            {_id: idLesson},
+            {multipleChoices:multipleChoice}
+        ).then(result=>{
+            resolve(result);
+        }).catch(err=>{
+            reject(err);
+        });
+    })
+}
+
 
 module.exports={
     createLesson:createLesson,
@@ -105,5 +146,8 @@ module.exports={
     updateLesson:updateLesson,
     deleteFileOfLesson:deleteFileOfLesson,
     deleteMultipleChoice:deleteMultipleChoice,
-    addAnMultipleChoice:addAnMultipleChoice
+    addAnMultipleChoice:addAnMultipleChoice,
+    addVideo:addVideo,
+    addDoc:addDoc,
+    addListMultipleChoice:addListMultipleChoice
 }
