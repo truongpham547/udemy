@@ -62,6 +62,19 @@ function getbyIduser(iduser) {
   });
 }
 
+function getbyId(id) {
+  return new Promise((resolve, reject) => {
+    courseModel
+      .getbyId(id)
+      .then((course) => {
+        return resolve(course);
+      })
+      .catch((err) => {
+        return reject(err);
+      });
+  });
+}
+
 function getfree() {
   return new Promise((resolve, reject) => {
     courseModel
@@ -129,4 +142,5 @@ module.exports = {
   getbyIduser: getbyIduser,
   getfree: getfree,
   gettop: gettop,
+  getbyId: getbyId,
 };

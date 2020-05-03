@@ -151,6 +151,21 @@ function getbyCategory(idcategory) {
   });
 }
 
+function getbyId(id) {
+  return new Promise((resolve, reject) => {
+    courseSchema
+      .findOne({ _id: id })
+      .populate("idUser", "name")
+      .populate("category", "name")
+      .then((course) => {
+        return resolve(course);
+      })
+      .catch((err) => {
+        return reject(err);
+      });
+  });
+}
+
 function getbyIduser(iduser) {
   return new Promise((resolve, reject) => {
     courseSchema
@@ -208,4 +223,5 @@ module.exports = {
   gettop: gettop,
   update: update,
   delete: del,
+  getbyId: getbyId,
 };
