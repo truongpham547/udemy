@@ -1,4 +1,5 @@
 const User = require("../schema/user.schema");
+const Course = require("../schema/course.schema");
 const bcrypt = require("bcryptjs");
 var fs = require("fs");
 var path = require("path");
@@ -126,9 +127,18 @@ function getUsers() {
 
 function deleteuser(id) {
   return new Promise((resolve, reject) => {
-    User.deleteOne({ _id: id })
+    User.findOneAndDelete({ _id: id, role: { $not: "admin" } })
       .then((user) => {
-        resolve(user);
+        if (!user)
+          resolve({ status: "fail", message: "Delete admin is not permited" });
+        try {
+          fs.unlinkSync(
+            path.join(__dirname, "../public/upload/user_image/" + user.image)
+          );
+        } catch (err) {}
+        Course.deleteMany({ iduser: id }).then(() => {
+          resolve({ status: "success" });
+        });
       })
       .catch((err) => {
         reject(err);
