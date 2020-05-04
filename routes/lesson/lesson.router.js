@@ -189,7 +189,6 @@ Router.put('/add-video/:idLesson',[verifyToken,upload.single('videos'),validateV
 
 
 
-var uploadDocs = upload.fields([{ name: 'docs', maxCount: 5 }])
 
 
 let validateDoc=[
@@ -254,7 +253,7 @@ Router.put('/add-list-multiple-choice/:idLesson',[verifyToken,validateListMultip
 });
 
 
-Router.get('/get-lesson-by-id/:idLesson', function (req, res, next) {
+Router.get('/get-lesson-by-id/:idLesson',verifyToken,function (req, res, next) {
   lessonController.getLessonById(req.params.idLesson).then(lesson=>{
     res.status(200).send(lesson);
   }).catch(err=>{

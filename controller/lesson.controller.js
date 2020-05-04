@@ -68,9 +68,10 @@ function deleteFileOfLesson(fileName){
 
 function deleteMultipleChoice(idLesson,idMultipleChoice){
     return new Promise((resolve,reject)=>{
-        lessonSchema.update(
+        lessonSchema.findOneAndUpdate(
             {_id: idLesson},
             {$pull: {multipleChoices: {_id:idMultipleChoice}}},
+            {new: true},
             function(err,result){
                 if(err){
                     return reject(err);
@@ -83,9 +84,10 @@ function deleteMultipleChoice(idLesson,idMultipleChoice){
 
 function addAnMultipleChoice(idLesson,multipleChoice){
     return new Promise((resolve,reject)=>{
-        lessonSchema.update(
+        lessonSchema.findOneAndUpdate(
             {_id: idLesson},
             {$push: {multipleChoices: multipleChoice}},
+            {new: true},
             function(err,result){
                 if(err){
                     return reject(err);
@@ -98,9 +100,9 @@ function addAnMultipleChoice(idLesson,multipleChoice){
 
 function addVideo(idLesson,video){
     return new Promise((resolve,reject)=>{
-        lessonSchema.update({_id: idLesson},{
+        lessonSchema.findOneAndUpdate({_id: idLesson},{
             video:video
-        }).then(newLesson=>{
+        },{new: true}).then(newLesson=>{
             resolve(newLesson);
         }).catch(err=>{
             reject(err);
@@ -110,9 +112,10 @@ function addVideo(idLesson,video){
 
 function addDoc(idLesson,doc){
     return new Promise((resolve,reject)=>{
-        lessonSchema.update(
+        lessonSchema.findOneAndUpdate(
             {_id: idLesson},
             {$push: {doc: doc}},
+            {new: true},
             function(err,result){
                 if(err){
                     console.log(err);
@@ -127,9 +130,10 @@ function addDoc(idLesson,doc){
 
 function addListMultipleChoice(idLesson,multipleChoice){
     return new Promise((resolve,reject)=>{
-        lessonSchema.update(
+        lessonSchema.findOneAndUpdate(
             {_id: idLesson},
-            {multipleChoices:multipleChoice}
+            {multipleChoices:multipleChoice},
+            {new: true}
         ).then(result=>{
             resolve(result);
         }).catch(err=>{
