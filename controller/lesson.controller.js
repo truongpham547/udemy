@@ -54,15 +54,25 @@ function updateLesson(idLesson,data){
     });
 }
 
-function deleteFileOfLesson(fileName){
+function deleteFileOfLesson(idLesson,fileName){
     return new Promise((resolve,reject)=>{
-        fs.unlink(path.join(__dirname, '../public/upload/lesson/')+fileName,(err)=>{
-            if(err){
-                reject(err);
-            }else{
-                resolve({"message":"Deleted"});
+        lessonSchema.findOneAndUpdate(
+            {_id: idLesson},
+            {$pull: {doc: fileName}},
+            {new: true},
+            function(err,result){
+                if(err){
+                    return reject(err);
+                }
+                fs.unlink(path.join(__dirname, '../public/upload/lesson/')+fileName,(err)=>{
+                    if(err){
+                        reject(err);
+                    }else{
+                        resolve({"message":"Deleted"});
+                    }
+                });
             }
-        });
+        );
     });
 }
 
@@ -100,10 +110,20 @@ function addAnMultipleChoice(idLesson,multipleChoice){
 
 function addVideo(idLesson,video){
     return new Promise((resolve,reject)=>{
-        lessonSchema.findOneAndUpdate({_id: idLesson},{
-            video:video
-        },{new: true}).then(newLesson=>{
-            resolve(newLesson);
+        lessonSchema.findOne({_id:idLesson}).then(lesson=>{
+            fs.unlink(path.join(__dirname, '../public/upload/lesson/')+lesson.video,(err)=>{
+                if(err){
+                    reject(err);
+                }else{
+                    lessonSchema.findOneAndUpdate({_id: idLesson},{
+                        video:video
+                    },{new: true}).then(newLesson=>{
+                        resolve(newLesson);
+                    }).catch(err=>{
+                        reject(err);
+                    });
+                }
+            });
         }).catch(err=>{
             reject(err);
         });

@@ -90,8 +90,8 @@ Router.get('/get-lesson-by-id-course/:idCourse', function (req, res, next) {
   });
 });
 
-Router.delete('/delete-lesson-file/:fileName',verifyToken,function(req,res,next){
-  lessonController.deleteFileOfLesson(req.params.fileName).then(deleted=>{
+Router.delete('/delete-lesson-file/:idLesson/:fileName',verifyToken,function(req,res,next){
+  lessonController.deleteFileOfLesson(req.params.idLesson,req.params.fileName).then(deleted=>{
     return res.status(200).send(deleted);
   }).catch(err=>{
     console.log(err);
