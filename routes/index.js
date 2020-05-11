@@ -16,4 +16,7 @@ Router.use('/join',require("./join/join.router"));
 Router.use('/',require('./user/index.router.js'));
 Router.use('/',require('./authenticate/authenticate.js'));
 
+
+
+
 module.exports = Router;

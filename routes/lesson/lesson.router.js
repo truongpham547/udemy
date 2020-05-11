@@ -6,6 +6,7 @@ const fs=require('fs');
 const path= require('path');
 var verifyToken = require("../../middleware/verifyToken");
 
+
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'public/upload/lesson')
@@ -260,6 +261,48 @@ Router.get('/get-lesson-by-id/:idLesson',verifyToken,function (req, res, next) {
     console.log(err);
     res.status(500).send({"message":"Lỗi server"});
   });
+});
+
+Router.get('/stream-video/:video',verifyToken,(req,res,next)=>{
+  console.log("start stream...........");
+  let pathStoreVideo="../../public/upload/lesson/"+req.params.video;
+  const pathFile = path.join(__dirname, pathStoreVideo);
+  const stat = fs.statSync(pathFile)
+  const fileSize = stat.size
+  const range = req.headers.range
+  let downloaded=0;
+  if (range) {
+    const parts = range.replace(/bytes=/, "").split("-")
+    const start = parseInt(parts[0], 10)
+    const end = parts[1] 
+      ? parseInt(parts[1], 10)
+      : fileSize-1
+    const chunksize = (end-start)+1
+    console.log(chunksize);
+    const file = fs.createReadStream(pathFile, {start, end})
+    const head = {
+      'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+      'Accept-Ranges': 'bytes',
+      'Content-Length': chunksize,
+      'Content-Type': 'video/mp4',
+    }
+    res.writeHead(206, head);
+    file.on('data',(chunk)=>{
+      downloaded += chunk.length;
+      console.log(downloaded);
+    });
+    file.on('open',(chunk)=>{
+      file.pipe(res);
+    });
+    
+  } else {
+    const head = {
+      'Content-Length': fileSize,
+      'Content-Type': 'video/mp4',
+    }
+    res.writeHead(200, head)
+    fs.createReadStream(pathFile).pipe(res)
+  }
 });
 
 
