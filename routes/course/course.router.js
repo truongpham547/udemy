@@ -108,6 +108,16 @@ Router.delete("/delete/:id", verifyToken, function (req, res, next) {
   }
 });
 
+Router.get("/permitCourse/:id", verifyToken, function (req, res, next) {
+  try {
+    CourseController.permitCourse(req.params.id, req.user.id).then((result) => {
+      return res.status(200).send(result);
+    });
+  } catch (error) {
+    return res.status(500).send({ status: "error" });
+  }
+});
+
 Router.put("/update/:id", verifyToken, upload.single("image"), function (
   req,
   res,

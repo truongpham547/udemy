@@ -1,4 +1,5 @@
 var courseSchema = require("../schema/course.schema");
+var lessonSchema = require("../schema/lesson.schema");
 var fs = require("fs");
 var path = require("path");
 
@@ -108,9 +109,11 @@ function del(id, iduser) {
           path.join(__dirname, "../public/upload/course_image/" + updated.image)
         );
       } catch (err) {}
-      courseSchema.deleteOne({ _id: id, idUser: iduser }).then((result) => {
-        if (result) resolve({ status: "success" });
-        resolve({ status: "error" });
+      lessonSchema.deleteMany({ idCourse: id }).then(() => {
+        courseSchema.deleteOne({ _id: id }).then((result) => {
+          if (result) resolve({ status: "success" });
+          resolve({ status: "error" });
+        });
       });
     } catch (err) {
       console.log(err);
@@ -214,6 +217,25 @@ function gettop() {
   });
 }
 
+function permit(id, iduser) {
+  return new Promise((resolve, reject) => {
+    try {
+      courseSchema
+        .findOneAndUpdate({ _id: id }, { is_checked: 1 })
+        .then((result) => {
+          if (result) {
+            result.is_checked = 1;
+            resolve({ status: "success" });
+          }
+          resolve({ status: "error" });
+        });
+    } catch (err) {
+      console.log(err);
+      reject(err);
+    }
+  });
+}
+
 module.exports = {
   create: create,
   gets: gets,
@@ -224,4 +246,5 @@ module.exports = {
   update: update,
   delete: del,
   getbyId: getbyId,
+  permit: permit,
 };

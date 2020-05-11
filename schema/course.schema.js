@@ -6,60 +6,63 @@ const category = require("./category.schema");
 const courseSchema = new Schema({
   name: {
     type: String,
-    required: true
+    required: true,
   },
   idUser: {
     type: Schema.Types.ObjectId,
     ref: user,
-    required: true
+    required: true,
   },
   //hinh nen
   image: {
-    type: String
+    type: String,
   },
   goal: {
     type: String,
-    required: true
+    required: true,
   },
   description: {
     type: String,
-    required: true
+    required: true,
   },
   category: {
     type: Schema.Types.ObjectId,
     ref: category,
-    required: true
+    required: true,
   },
   price: {
     type: Number,
-    required: true
+    required: true,
   },
 
   discount: {
     type: Number,
-    default: 0
+    default: 0,
   },
 
   vote: {
     totalVote: {
       type: Number,
-      default: 0
+      default: 0,
     },
     EVGVote: {
       type: Number,
-      default: 0
-    }
+      default: 0,
+    },
   },
   ranking: {
     type: Number,
-    default: 0
+    default: 0,
   },
   created_at: {
     type: Date,
-    default: Date.now()
+    default: Date.now(),
   },
-
-  updated_at: Date
+  is_checked: {
+    type: Number,
+    default: 0,
+  },
+  updated_at: Date,
 });
 
 const courses = mongoose.model("courses", courseSchema);

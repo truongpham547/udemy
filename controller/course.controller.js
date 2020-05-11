@@ -133,6 +133,18 @@ function updateCourse(data) {
   });
 }
 
+function permitCourse(id, iduser) {
+  return new Promise((resolve, reject) => {
+    try {
+      courseModel.permit(id, iduser).then((result) => {
+        resolve(result);
+      });
+    } catch (error) {
+      resolve({ status: "error" });
+    }
+  });
+}
+
 module.exports = {
   createCourse: createCourse,
   deleteCourse: deleteCourse,
@@ -143,4 +155,5 @@ module.exports = {
   getfree: getfree,
   gettop: gettop,
   getbyId: getbyId,
+  permitCourse: permitCourse,
 };
