@@ -78,17 +78,49 @@ function deleteFileOfLesson(idLesson,fileName){
 
 function deleteMultipleChoice(idLesson,idMultipleChoice){
     return new Promise((resolve,reject)=>{
-        lessonSchema.findOneAndUpdate(
-            {_id: idLesson},
-            {$pull: {multipleChoices: {_id:idMultipleChoice}}},
-            {new: true},
-            function(err,result){
-                if(err){
-                    return reject(err);
+        lessonSchema.findOne({_id:idLesson}).then(oldDoc=>{
+            for(let i=0;i<oldDoc.multipleChoices.length;i++){
+                if(oldDoc.multipleChoices[i]._id==idMultipleChoice){
+                    if(oldDoc.multipleChoices[i].image==undefined){
+                        lessonSchema.findOneAndUpdate(
+                            {_id: idLesson},
+                            {$pull: {multipleChoices: {_id:idMultipleChoice}}},
+                            {new: true},
+                            function(err,result){
+                                if(err){
+                                    return reject(err);
+                                }
+                                return resolve(result);
+                            }
+                        );
+                    }else{
+                        fs.unlink(path.join(__dirname, '../public/upload/lesson/')+oldDoc.multipleChoices[i].image,(err)=>{
+                            if(err){
+                                reject(err);
+                            }else{
+                                lessonSchema.findOneAndUpdate(
+                                    {_id: idLesson},
+                                    {$pull: {multipleChoices: {_id:idMultipleChoice}}},
+                                    {new: true},
+                                    function(err,result){
+                                        if(err){
+                                            return reject(err);
+                                        }
+                                        return resolve(result);
+                                    }
+                                );
+                            }
+                        });
+                        break;
+                    }
+
                 }
-                return resolve(result);
+                
             }
-        );
+        }).catch(err=>{
+            reject(err);
+        })
+
     })
 }
 
@@ -152,13 +184,15 @@ function addListMultipleChoice(idLesson,multipleChoice){
     return new Promise((resolve,reject)=>{
         lessonSchema.findOneAndUpdate(
             {_id: idLesson},
-            {multipleChoices:multipleChoice},
-            {new: true}
-        ).then(result=>{
-            resolve(result);
-        }).catch(err=>{
-            reject(err);
-        });
+            {$push: {multipleChoices: multipleChoice}},
+            {new: true},
+            function(err,result){
+                if(err){
+                    return reject(err);
+                }
+                return resolve(result);
+            }
+        );
     })
 }
 
@@ -172,6 +206,82 @@ function getLessonById(idLesson){
     })
 }
 
+function deleteImageMultipleChoice(image){
+    return new Promise((resolve,reject)=>{
+        fs.unlink(path.join(__dirname, '../public/upload/lesson/')+image,(err)=>{
+            if(err){
+                reject(err);
+            }else{
+                resolve({"message":"Deleted"});
+            }
+        });
+    });
+}
+
+
+function addListPopupQuestion(idLesson,popupQuestion){
+    return new Promise((resolve,reject)=>{
+        lessonSchema.findOneAndUpdate(
+            {_id: idLesson},
+            {$push:{popupQuestion: popupQuestion}},
+            {new: true},
+            function(err,result){
+                if(err){
+                    return reject(err);
+                }
+                return resolve(result);
+            }
+        );
+    })
+}
+
+
+function deletePopupQuestion(idLesson,idPopupQuestion){
+    return new Promise((resolve,reject)=>{
+        lessonSchema.findOne({_id:idLesson}).then(oldDoc=>{
+            for(let i=0;i<oldDoc.popupQuestion.length;i++){
+                if(oldDoc.popupQuestion[i]._id==idPopupQuestion){
+                    if(oldDoc.popupQuestion[i].image==undefined){
+                        lessonSchema.findOneAndUpdate(
+                            {_id: idLesson},
+                            {$pull: {popupQuestion: {_id:idPopupQuestion}}},
+                            {new: true},
+                            function(err,result){
+                                if(err){
+                                    return reject(err);
+                                }
+                                return resolve(result);
+                            }
+                        );
+                    }else{
+                        fs.unlink(path.join(__dirname, '../public/upload/lesson/')+oldDoc.popupQuestion[i].image,(err)=>{
+                            if(err){
+                                reject(err);
+                            }else{
+                                lessonSchema.findOneAndUpdate(
+                                    {_id: idLesson},
+                                    {$pull: {popupQuestion: {_id:idPopupQuestion}}},
+                                    {new: true},
+                                    function(err,result){
+                                        if(err){
+                                            return reject(err);
+                                        }
+                                        return resolve(result);
+                                    }
+                                );
+                            }
+                        });
+                        break;
+                    }
+                }
+                
+            }
+        }).catch(err=>{
+            reject(err);
+        })
+
+    })
+}
 
 module.exports={
     createLesson:createLesson,
@@ -184,5 +294,8 @@ module.exports={
     addVideo:addVideo,
     addDoc:addDoc,
     addListMultipleChoice:addListMultipleChoice,
-    getLessonById:getLessonById
+    getLessonById:getLessonById,
+    deleteImageMultipleChoice:deleteImageMultipleChoice,
+    addListPopupQuestion:addListPopupQuestion,
+    deletePopupQuestion:deletePopupQuestion
 }

@@ -118,7 +118,7 @@ Router.put('/update-lesson/:idLesson',verifyToken,(req,res,next)=>{
   })
 });
 
-Router.delete('/delete-a-multiple-choice/:idLesson/:idMultipleChoice',verifyToken,(req,res,next)=>{
+Router.delete('/delete-a-multiple-choice/:idLesson/:idMultipleChoice',(req,res,next)=>{
   lessonController.deleteMultipleChoice(req.params.idLesson,req.params.idMultipleChoice).then(deleted=>{
     return res.status(200).send(deleted);
   }).catch(err=>{
@@ -137,16 +137,18 @@ let validateAddAMultipleChoice=[
       throw new Error('Câu trắc nghiệm không đúng form yêu cầu gồm A, B, C, D, câu hỏi và đáp án đúng');
     }
     return true;
-  })
+  }),
 ];
 
 
 Router.put('/add-an-multiple-choice/:idLesson',[verifyToken,validateAddAMultipleChoice],(req,res,next)=>{
   const errors = validationResult(req);
+
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
   }
-  lessonController.addAnMultipleChoice(req.params.idLesson,(req.body.multipleChoice)).then(result=>{
+
+  lessonController.addAnMultipleChoice(req.params.idLesson,req.body.multipleChoice).then(result=>{
     return res.status(200).send(result);
   }).catch(err=>{
     console.log(err);
@@ -187,9 +189,6 @@ Router.put('/add-video/:idLesson',[verifyToken,upload.single('videos'),validateV
     return res.status(500).send({"message":"Lỗi server"});
   })
 });
-
-
-
 
 
 let validateDoc=[
@@ -305,5 +304,76 @@ Router.get('/stream-video/:video',verifyToken,(req,res,next)=>{
   }
 });
 
+
+var validateImageMultipleChoice=[
+  body('image').custom((value, { req }) => {
+    if(req.file != undefined){
+      var mimetype=req.file.mimetype;
+      var type=mimetype.split("/")[1];
+      if(type!="jpeg" && type!="png" && type!="jpg"){
+        fs.unlink(path.join(__dirname, '../../public/upload/category/')+req.file.filename,(err)=>{
+          console.log(err);
+        });
+        throw new Error('Các định dạng file yêu cầu là JPEG, PNG, JPG');
+      }
+      return true;
+    }else{
+      throw new Error('Vui lòng chọn image');
+    }
+  })
+];
+
+
+Router.post('/upload-image-multiple-choice',[verifyToken,upload.single('image'),validateImageMultipleChoice],(req,res,next)=>{
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+  }
+  return res.status(200).send({"image":req.file.filename})
+})
+
+Router.delete('/delete-image-multiple-choice/:imageName',verifyToken,(req,res,next)=>{
+  lessonController.deleteImageMultipleChoice(req.params.imageName).then(success=>{
+    res.status(200).send({"message":"deleted"});
+  }).catch(err=>{
+    res.status(500).send({"message":"Lỗi server"});
+  })
+});
+
+let validateListPopupQuestion=[
+  body('popupQuestions').custom((newValue, { req }) => {
+    console.log(req.body.multipleChoices);
+    console.log(newValue.length);
+    for(let i=0;i<newValue.length;i++){
+      if(newValue[i].A ==undefined || newValue[i].B ==undefined || newValue[i].C ==undefined || newValue[i].D ==undefined || newValue[i].answer ==undefined|| newValue[i].question ==undefined||newValue[i].timeShow==undefined){
+        throw new Error('Câu trắc nghiệm không đúng form yêu cầu gồm A, B, C, D, thời gian show câu hỏi và đáp án đúng');
+      }
+    }
+    return true;
+  }),
+];
+
+Router.put('/add-list-popup-question/:idLesson',[verifyToken,validateListPopupQuestion],(req,res,next)=>{
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+  }
+
+  lessonController.addListPopupQuestion(req.params.idLesson,req.body.popupQuestions).then(result=>{
+    return res.status(200).send(result);
+  }).catch(err=>{
+    console.log(err);
+    return res.status(500).send({"message":"Lỗi server"});
+  })
+});
+
+Router.delete('/delete-a-popup-question/:idLesson/:idPopupQuestion',verifyToken,function(req,res,next){
+  lessonController.deletePopupQuestion(req.params.idLesson,req.params.idPopupQuestion).then(deleted=>{
+    return res.status(200).send(deleted);
+  }).catch(err=>{
+    console.log(err);
+    return res.status(500).send({"message":"Lỗi server"});
+  })
+});
 
 module.exports = Router;
