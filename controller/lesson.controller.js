@@ -184,6 +184,22 @@ function addListMultipleChoice(idLesson,multipleChoice){
     return new Promise((resolve,reject)=>{
         lessonSchema.findOneAndUpdate(
             {_id: idLesson},
+            {multipleChoices: multipleChoice},
+            {new: true},
+            function(err,result){
+                if(err){
+                    return reject(err);
+                }
+                return resolve(result);
+            }
+        );
+    })
+}
+
+function addMoreListMultipleChoice(idLesson,multipleChoice){
+    return new Promise((resolve,reject)=>{
+        lessonSchema.findOneAndUpdate(
+            {_id: idLesson},
             {$push: {multipleChoices: multipleChoice}},
             {new: true},
             function(err,result){
@@ -297,5 +313,6 @@ module.exports={
     getLessonById:getLessonById,
     deleteImageMultipleChoice:deleteImageMultipleChoice,
     addListPopupQuestion:addListPopupQuestion,
-    deletePopupQuestion:deletePopupQuestion
+    deletePopupQuestion:deletePopupQuestion,
+    addMoreListMultipleChoice:addMoreListMultipleChoice
 }

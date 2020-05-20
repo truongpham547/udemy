@@ -252,6 +252,20 @@ Router.put('/add-list-multiple-choice/:idLesson',[verifyToken,validateListMultip
   })
 });
 
+Router.put('/add-more-list-multiple-choice/:idLesson',[verifyToken,validateListMultipleChoice],(req,res,next)=>{
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+  }
+
+  lessonController.addMoreListMultipleChoice(req.params.idLesson,req.body.multipleChoices).then(result=>{
+    return res.status(200).send(result);
+  }).catch(err=>{
+    console.log(err);
+    return res.status(500).send({"message":"Lỗi server"});
+  })
+});
+
 
 Router.get('/get-lesson-by-id/:idLesson',verifyToken,function (req, res, next) {
   lessonController.getLessonById(req.params.idLesson).then(lesson=>{
