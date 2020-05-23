@@ -239,7 +239,7 @@ function addListPopupQuestion(idLesson,popupQuestion){
     return new Promise((resolve,reject)=>{
         lessonSchema.findOneAndUpdate(
             {_id: idLesson},
-            {$push:{popupQuestion: popupQuestion}},
+            {popupQuestion: popupQuestion},
             {new: true},
             function(err,result){
                 if(err){
