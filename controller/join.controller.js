@@ -1,5 +1,6 @@
 var joinSchema = require('../schema/join.schema');
-
+var lessonProgressSchema = require('../schema/lessonProgress.schema');
+var lessonSchema = require('../schema/lesson.schema');
 
 function isJoined(idUser,idCourse){
     return new Promise((resolve,reject)=>{
@@ -82,10 +83,63 @@ function deleteJoin(id){
     })
 }
 
+async function updatePercentCourse(idCourse,idJoin){
+
+    try {
+        let numLessonOfCourse = await lessonSchema.countDocuments({idCourse:idCourse});
+        let numLessonCompleted = await lessonProgressSchema.countDocuments({idJoin:idJoin});
+        let percentCourseComplete = Math.round((numLessonCompleted/numLessonOfCourse)*100);
+        return await joinSchema.findOneAndUpdate({_id:idJoin},{percentCompleted:percentCourseComplete},{new:true});
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
+async function updateProgressLesson(idUser,idCourse,idLesson,data){
+    try {
+        let joinInfo = await joinSchema.findOne({ idUser:idUser,idCourse:idCourse});
+        console.log(joinInfo._id);
+        let lessonProgress = await lessonProgressSchema.findOne({idJoin:joinInfo._id,idLesson:idLesson});
+        if(!lessonProgress){
+            let insertProgress = new lessonProgressSchema();
+            insertProgress.idLesson=idLesson;
+            insertProgress.isCompleted=data.isCompleted;
+            insertProgress.idJoin=joinInfo._id;
+            try{
+                let inserted = await insertProgress.save();
+                let courseUpdated = await updatePercentCourse(idCourse,joinInfo._id);
+                return courseUpdated;
+            }catch(err){
+                throw new Error(err);
+            }
+
+        }else{
+            try {
+                let updated =await lessonProgressSchema.findOneAndUpdate({idJoin:joinInfo._id,idLesson:idLesson},{isCompleted:data.isCompleted},{new:true});
+                let courseUpdated = await updatePercentCourse(idCourse,joinInfo._id);
+                return courseUpdated;
+            } catch (error) {
+                throw new Error(error);
+            }
+        }
+        
+    } catch (error) {
+        throw new Error(error);
+    }
+
+
+    
+}
+
+function getProgressOfCourse(){
+    return new Promise((resolve,reject))
+}
+
 module.exports = {
     joinCourse:joinCourse,
     getCoursesJoinedByIdUser:getCoursesJoinedByIdUser,
     getJoinCourseById:getJoinCourseById,
     updateJoin:updateJoin,
-    deleteJoin:deleteJoin
+    deleteJoin:deleteJoin,
+    updateProgressLesson:updateProgressLesson
 }

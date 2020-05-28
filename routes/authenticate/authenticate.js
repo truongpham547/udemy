@@ -34,9 +34,12 @@ Router.post("/login", function(req, res, next) {
           { id: user._id, role: user.role,active:user.active},
           process.env.TOKEN_SECRET
         );
-        res.clearCookie("jwt");
+        res.clearCookie("auth-cookie");
         return res
           .status(200)
+          .cookie('auth-cookie', token, {
+            httpOnly: true
+          })
           .header("auth-token", token)
           .send(user);
       }
@@ -104,9 +107,12 @@ Router.post("/register",[upload.single('image'),validateRegisterOption],function
             { id: result.user._id, role: result.user.role },
             process.env.TOKEN_SECRET
           );
-          res.clearCookie("jwt");
+          res.clearCookie("auth-cookie");
           return res
             .status(200)
+            .cookie('auth-cookie', token, {
+              httpOnly: true
+            })
             .header("auth-token", token)
             .send(result.user);
         }
@@ -204,9 +210,7 @@ Router.post("/reset-password",validateResetPassword, (req, res, next) => {
 });
 
 Router.get('/logout',(req,res,next)=>{
-  res.cookie('jwt', 'loggedout', {
-    httpOnly: true
-  });
+  res.clearCookie("auth-cookie");
   res.status(200).json({ status: 'success' });
 });
 

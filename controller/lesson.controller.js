@@ -299,6 +299,13 @@ function deletePopupQuestion(idLesson,idPopupQuestion){
     })
 }
 
+
+function updatePercentLearn(){
+    return new Promise((resolve,reject)=>{
+        
+    })
+}
+
 module.exports={
     createLesson:createLesson,
     getLessonByCourseId:getLessonByCourseId,

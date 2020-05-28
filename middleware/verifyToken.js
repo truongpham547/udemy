@@ -2,6 +2,9 @@ const jwt = require("jsonwebtoken");
 
 module.exports = function (req, res, next) {
   const token = req.header("auth-token");
+  if(!token){
+    token = req.cookies["auth-cookie"];
+  }
   if (!token) {
     return res
       .status(401)
@@ -10,12 +13,6 @@ module.exports = function (req, res, next) {
 
   try {
     const verified = jwt.verify(token, process.env.TOKEN_SECRET);
-
-    // if (verified.active == 0) {
-    //   return res
-    //     .status(401)
-    //     .send({ message: "Vui lòng kích hoạt tài khoản và đăng nhập lại" });
-    // }
     req.user = verified;
     next();
   } catch (error) {

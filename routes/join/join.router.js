@@ -30,4 +30,13 @@ Router.get("/get-courses-joined-by-user/:id",function(req, res, next) {
         });
 });
 
+Router.put("/update-progress-lesson-of-course/:idUser/:idCourse/:idLesson",function(req,res,next){
+    joinController.updateProgressLesson(req.params.idUser,req.params.idCourse,req.params.idLesson,req.body).then(data=>{
+        res.status(200).send(data);
+    }).catch(err=>{
+        console.log(err);
+        res.status(500).send({message:"Lỗi Server"});
+    });
+});
+
 module.exports=Router;

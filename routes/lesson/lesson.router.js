@@ -277,7 +277,7 @@ Router.get('/get-lesson-by-id/:idLesson',verifyToken,function (req, res, next) {
 });
 
 Router.get('/stream-video/:video',verifyToken,(req,res,next)=>{
-  console.log("start stream...........");
+  // console.log("start stream...........");
   let pathStoreVideo="../../public/upload/lesson/"+req.params.video;
   const pathFile = path.join(__dirname, pathStoreVideo);
   const stat = fs.statSync(pathFile)
@@ -291,7 +291,7 @@ Router.get('/stream-video/:video',verifyToken,(req,res,next)=>{
       ? parseInt(parts[1], 10)
       : fileSize-1
     const chunksize = (end-start)+1
-    console.log(chunksize);
+    // console.log(chunksize);
     const file = fs.createReadStream(pathFile, {start, end})
     const head = {
       'Content-Range': `bytes ${start}-${end}/${fileSize}`,
@@ -302,7 +302,7 @@ Router.get('/stream-video/:video',verifyToken,(req,res,next)=>{
     res.writeHead(206, head);
     file.on('data',(chunk)=>{
       downloaded += chunk.length;
-      console.log(downloaded);
+      // console.log(downloaded);
     });
     file.on('open',(chunk)=>{
       file.pipe(res);
