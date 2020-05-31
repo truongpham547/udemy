@@ -13,6 +13,7 @@ Router.use("/lesson", require("./lesson/lesson.router.js"));
 Router.use("/course", require("./course/course.router.js"));
 Router.use('/category',require('./category/category.router.js'));
 Router.use('/join',require("./join/join.router"));
+Router.use('/comment',require("./comment/comment.router"));
 Router.use('/',require('./user/index.router.js'));
 Router.use('/',require('./authenticate/authenticate.js'));
 
