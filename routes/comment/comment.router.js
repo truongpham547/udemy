@@ -18,11 +18,11 @@ var upload = multer({ storage: storage });
 
 Router.get("/get-parent-comment-by-lesson/:idCourse/:idLesson",async(req,res,next)=>{
     try{
-        let comments =await commentController.getParentComment(req.params.idCourse,req.params.idLesson);
+        var comments =await commentController.getParentComment(req.params.idCourse,req.params.idLesson);
         return res.status(200).send(comments);
     }catch(error){
         console.log(error);
-        res.status(200).send({"message":"Lỗi server"});
+        res.status(500).send({"message":"Lỗi server"});
     }
     
 });

@@ -23,7 +23,8 @@ const commentSchema =new Schema({
     },
     idParent:{
         type:Schema.Types.ObjectId,
-        default:null
+        default:null,
+        sparse:true
     },
     image:{
         type:String,
