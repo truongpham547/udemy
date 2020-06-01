@@ -2,53 +2,44 @@ var commentSchema = require("../schema/comment.schema");
 const fs=require('fs');
 const path = require('path');
 
-async function getParentComment(idCourse,idLesson) {
-    var commentWithChid=[];
+async function getParentComment(idCourse,idLesson,skip,limit) {
     try {
-        var comments = await commentSchema.find({idCourse:idCourse,idLesson:idLesson,idParent:null});
+        var comments = await commentSchema.find({idCourse:idCourse,idLesson:idLesson,idParent:null}).limit(parseInt(limit)).skip(parseInt(skip));
+
+        var tmpComments=comments;
         
         for(let i=0;i<comments.length;i++){
-            var childComment={};
             try {
-                let data={}
-                childComment = await commentSchema.find({idParent:comments[i]._id});
-                
-                data["parentComment"]=comments[i];
-                data["childComment"]=childComment;
-                commentWithChid.push(data);
-              
+                var childComment = await commentSchema.find({idParent:comments[i]._id});
+                var tmp = tmpComments[i];
+                tmpComments[i]={...tmp._doc,"childComment":childComment};
             } catch (error) {
                 throw new Error(error);
             }
             
         }
-        return commentWithChid;
+        return tmpComments;
     } catch (error) {
         throw new Error(error);
     }
 }
 
 async function getChildCommentById(idParent){
-    var commentWithChid=[];
     try {
         var comments = await commentSchema.find({idParent:idParent}).sort({created_at:-1});
+        var tmpComments=comments;
         
         for(let i=0;i<comments.length;i++){
-            var childComment={};
             try {
-                let data={}
-                childComment = await commentSchema.find({idParent:comments[i]._id});
-                
-                data["parentComment"]=comments[i];
-                data["childComment"]=childComment;
-                commentWithChid.push(data);
-              
+                var childComment = await commentSchema.find({idParent:comments[i]._id});
+                var tmp = tmpComments[i];
+                tmpComments[i]={...tmp._doc,"childComment":childComment};
             } catch (error) {
                 throw new Error(error);
             }
             
         }
-        return commentWithChid;
+        return tmpComments;
     } catch (error) {
         throw new Error(error);
     }

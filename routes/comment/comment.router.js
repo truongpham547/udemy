@@ -16,9 +16,9 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 
-Router.get("/get-parent-comment-by-lesson/:idCourse/:idLesson",async(req,res,next)=>{
+Router.get("/get-parent-comment-by-lesson/:idCourse/:idLesson/:limit/:skip",async(req,res,next)=>{
     try{
-        var comments =await commentController.getParentComment(req.params.idCourse,req.params.idLesson);
+        var comments =await commentController.getParentComment(req.params.idCourse,req.params.idLesson,req.params.skip,req.params.limit);
         return res.status(200).send(comments);
     }catch(error){
         console.log(error);
