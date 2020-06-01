@@ -56,14 +56,19 @@ async function getChildCommentById(idParent){
 
 async function addComment(reqData,image){
     try {
+
         let comment =new commentSchema();
         comment.idCourse = reqData.idCourse;
-        comment.idParent=reqData.idParent;
+        if(reqData.idParent=="null"){
+            comment.idParent=null;
+        }else{
+            comment.idParent=reqData.idParent; 
+        }
         comment.content = reqData.content;
         comment.idUser=reqData.idUser;
         comment.idLesson = reqData.idLesson;
         comment.image = image;
-        newComment = await comment.save();
+        let newComment = await comment.save();
         return newComment;
     } catch (error) {
         throw new Error(error);
