@@ -29,12 +29,12 @@ async function getParentComment(idCourse,idLesson,skip,limit) {
 
 async function getChildCommentById(idParent){
     try {
-        var comments = await commentSchema.find({idParent:idParent}).sort({created_at:-1});
+        var comments = await commentSchema.find({idParent:idParent}).sort({created_at:-1}).populate("idUser",["email","name","image"],"users");
         var tmpComments=comments;
         
         for(let i=0;i<comments.length;i++){
             try {
-                var childComment = await commentSchema.find({idParent:comments[i]._id});
+                var childComment = await commentSchema.find({idParent:comments[i]._id}).populate("idUser",["email","name","image"],"users");
                 var tmp = tmpComments[i];
                 tmpComments[i]={...tmp._doc,"childComment":childComment};
             } catch (error) {
