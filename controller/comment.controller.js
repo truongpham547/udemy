@@ -13,7 +13,7 @@ async function getParentComment(idCourse,idLesson,skip,limit) {
         
         for(let i=0;i<comments.length;i++){
             try {
-                var childComment = await commentSchema.find({idParent:comments[i]._id});
+                var childComment = await commentSchema.find({idParent:comments[i]._id}).populate("idUser",["email","name","image"],"users");
                 var tmp = tmpComments[i];
                 tmpComments[i]={...tmp._doc,"childComment":childComment};
             } catch (error) {

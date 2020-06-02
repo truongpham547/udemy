@@ -41,7 +41,7 @@ Router.post("/pay", async (req, res) => {
                     });
                     res.status(200).send({"message":"payment success"});
                 }catch(err){
-
+                    res.status(500).send({"message":"Lỗi server"});
                 }
             })
             .catch(err => console.log(err));
