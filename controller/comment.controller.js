@@ -37,7 +37,6 @@ async function getChildCommentById(idParent){
             } catch (error) {
                 throw new Error(error);
             }
-            
         }
         return tmpComments;
     } catch (error) {
@@ -47,8 +46,10 @@ async function getChildCommentById(idParent){
 
 async function addComment(reqData,image){
     try {
-
-        let comment =new commentSchema();
+        var comment =new commentSchema();
+        if(image!=undefined){
+            comment.image = image;
+        }
         comment.idCourse = reqData.idCourse;
         if(reqData.idParent=="null"){
             comment.idParent=null;
@@ -58,7 +59,6 @@ async function addComment(reqData,image){
         comment.content = reqData.content;
         comment.idUser=reqData.idUser;
         comment.idLesson = reqData.idLesson;
-        comment.image = image;
         let newComment = await comment.save();
         return newComment;
     } catch (error) {
