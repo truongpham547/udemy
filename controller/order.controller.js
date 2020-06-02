@@ -8,14 +8,25 @@ async function createOrder(reqData) {
         order.idUser= reqData.idUser;
         order.idCourse = reqData.idCourse;
         order.payed=1;
+        order.amount=reqData.amount;
         order.save();
     } catch (error) {
         throw new Error(error);
     }
 }
 
-
+async function getListCourseOrdered(idUser){
+    try{
+        let orders =await orderSchema.find({idUser:idUser})
+            .populate("idUser",["email","name","image"],"users")
+            .populate("idCourse",["vote","price","discount","description","goal","image","name"],"courses");
+        return orders;
+    }catch(err){
+        throw new Error(err);
+    }
+}
 
 module.exports = {
-    createOrder:createOrder
+    createOrder:createOrder,
+    getListCourseOrdered:getListCourseOrdered
 }

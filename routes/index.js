@@ -15,6 +15,7 @@ Router.use('/category',require('./category/category.router.js'));
 Router.use('/join',require("./join/join.router"));
 Router.use('/comment',require("./comment/comment.router"));
 Router.use('/payment',require("./payment/payment.router"));
+Router.use('/order',require("./order/order.router"));
 Router.use('/',require('./user/index.router.js'));
 Router.use('/',require('./authenticate/authenticate.js'));
 

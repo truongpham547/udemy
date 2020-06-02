@@ -4,6 +4,8 @@ const { PRIVATE_KEY_PAYMENT } = process.env;
 const stripe = require('stripe')(PRIVATE_KEY_PAYMENT); 
 const courseController = require("../../controller/course.controller");
 const orderController = require("../../controller/order.controller");
+const joinController = require("../../controller/join.controller");
+
 
 Router.get("/get-payment-public-key",async(req,res,next)=>{
     const { PUBLIC_KEY_PAYMENT } = process.env;
@@ -15,7 +17,7 @@ Router.post("/pay", async (req, res) => {
 
         var courseDetail = courseController.getbyId(req.body.idCourse);
         
-        let mustPay = courseDetail.price-((courseDetail.price*courseDetail.discount)/100);
+        var mustPay = courseDetail.price-((courseDetail.price*courseDetail.discount)/100);
         if(req.body.amount!=mustPay){
             res.status(400).send({"message":"Số tiền không hợp lệ"});
         }
@@ -38,7 +40,14 @@ Router.post("/pay", async (req, res) => {
                     await orderController.createOrder({
                         "idUser":req.body.idUser,
                         "idCourse":req.body.idCourse,
+                        "amount":req.body.amount
                     });
+
+                    await joinController.joinCourse({
+                        "idUser":req.body.idUser,
+                        "idCourse":req.body.idCourse
+                    });
+
                     res.status(200).send({"message":"payment success"});
                 }catch(err){
                     res.status(500).send({"message":"Lỗi server"});

@@ -17,6 +17,10 @@ const orderSchema =new Schema({
         required:true,
         default:0
     },
+    amount:{
+        type:Number,
+        required:true
+    },
     created_at: {
         type: Date,
         default: Date.now()
