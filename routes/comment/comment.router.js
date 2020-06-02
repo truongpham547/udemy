@@ -48,7 +48,11 @@ Router.get('/get-child-comment-by-id-parent/:idParent',async (req,res,next)=>{
 
 Router.post("/add-comment",upload.single("image"),async(req,res,next)=>{
     try{
-        let newComment =await commentController.addComment(req.body,req.file.filename);
+        if(req.file==undefined){
+          var newComment =await commentController.addComment(req.body,undefined);
+        }else{
+          var newComment =await commentController.addComment(req.body,req.file.filename);
+        }
         return res.status(200).send(newComment);
     }catch(error){
         console.log(error);
