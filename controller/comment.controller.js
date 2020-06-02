@@ -4,8 +4,11 @@ const path = require('path');
 
 async function getParentComment(idCourse,idLesson,skip,limit) {
     try {
-        var comments = await commentSchema.find({idCourse:idCourse,idLesson:idLesson,idParent:null}).limit(parseInt(limit)).skip(parseInt(skip));
-
+        var comments = await commentSchema.find({idCourse:idCourse,idLesson:idLesson,idParent:null})
+            .populate("idUser",["email","name","image"],"users")
+            .limit(parseInt(limit))
+            .skip(parseInt(skip));
+            
         var tmpComments=comments;
         
         for(let i=0;i<comments.length;i++){
