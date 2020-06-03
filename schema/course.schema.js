@@ -64,6 +64,7 @@ const courseSchema = new Schema({
   },
   updated_at: Date,
 });
+courseSchema.index({name: 'text', description: 'text',goal:'text'});
 
 const courses = mongoose.model("courses", courseSchema);
 module.exports = courses;

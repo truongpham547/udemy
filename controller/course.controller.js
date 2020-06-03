@@ -145,6 +145,15 @@ function permitCourse(id, iduser) {
   });
 }
 
+async function searchCourse(str){
+  try{
+    var courses = await course.find({$text: {$search: str}}).limit(9);
+    return courses;
+  }catch(err){
+    throw new Error(err);
+  }
+}
+
 module.exports = {
   createCourse: createCourse,
   deleteCourse: deleteCourse,
@@ -156,4 +165,5 @@ module.exports = {
   gettop: gettop,
   getbyId: getbyId,
   permitCourse: permitCourse,
+  searchCourse:searchCourse
 };

@@ -142,4 +142,15 @@ Router.put("/update/:id", verifyToken, upload.single("image"), function (
   }
 });
 
+Router.get("/search-course/:str",async function (req, res, next) {
+  try{
+    var courses = await CourseController.searchCourse(req.params.str);
+    res.status(200).send(courses);
+  }catch(err){
+    res.status(500).send({"message":"Lỗi server"});
+  } 
+});
+
+
+
 module.exports = Router;

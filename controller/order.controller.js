@@ -26,7 +26,17 @@ async function getListCourseOrdered(idUser){
     }
 }
 
+async function getOrderByIdUserAndIdCourse(idUser,idCourse){
+    try{
+        let order = await orderSchema.findOne({idUser:idUser,idCourse:idCourse});
+        return order;
+    }catch(err){
+        throw new Error(err);
+    }
+}
+
 module.exports = {
     createOrder:createOrder,
-    getListCourseOrdered:getListCourseOrdered
+    getListCourseOrdered:getListCourseOrdered,
+    getOrderByIdUserAndIdCourse:getOrderByIdUserAndIdCourse
 }

@@ -1,19 +1,34 @@
 const Router = require("express").Router();
 // const verifyToken = require("../../middleware/verifyToken");
 const joinController = require("../../controller/join.controller");
+const orderController = require("../../controller/order.controller");
 
-Router.post("/create-join", function(req, res, next) {
-        let userData = req.body;
-        joinController.joinCourse(userData).then(result => {
-            if(result.status){
-                return res.status(200).send(result.data);
-            }else{
-                return res.status(500).send({message:result.message});
-            }
-        }).catch (error=>{
-            console.log(error)
-            return res.status(500).send({message:"Lỗi Server"});
-        });
+Router.post("/create-join", async function(req, res, next) {
+
+    try{
+        var orderDetail = await orderController.getOrderByIdUserAndIdCourse(req.idUser,req.idCourse);
+    }catch(err){
+        console.log(err);
+        return res.status(500).send({message:"Lỗi Server"}); 
+    }
+
+    if(courseDetail.price!=0){
+        if(orderDetail==null){
+            return res.status(500).send({message:"Bạn chưa thanh toán khóa học"});
+        }
+    }
+
+    let userData = req.body;
+    joinController.joinCourse(userData).then(result => {
+        if(result.status){
+            return res.status(200).send(result.data);
+        }else{
+            return res.status(500).send({message:result.message});
+        }
+    }).catch (error=>{
+        console.log(error)
+        return res.status(500).send({message:"Lỗi Server"});
+    });
     
 });
 
