@@ -41,6 +41,7 @@ app.use("/", indexRouter);
 const { URL_DB_LOCAL, URL_DB_SERVER } = process.env;
 
 mongoose.connect(
+  `${URL_DB_SERVER}` ||
   `${URL_DB_LOCAL}`,
   { useNewUrlParser: true, useUnifiedTopology: true },
   err => {
